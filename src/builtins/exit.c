@@ -12,7 +12,7 @@
 
 #include "builtins.h"
 
-int	builtin_exit(t_list **token_list, t_list **var_list)
+int	builtin_exit(char **opts, t_list **var_list)
 {
 	return (0);
 }

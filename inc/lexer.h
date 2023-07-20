@@ -19,15 +19,13 @@
 # include <stdio.h>
 # include <errno.h>
 
-int		token_type(int i, char *str);
-int		save_token(t_list **token_list, int start, int n, char *str);
-int		tokenize_line(t_list **token_list, int *i, int *start, char *str);
-int		tokenize(t_list **token_list, char *str);
+int		token_type(char *str);
+int		save_token(t_list **tokens, char *str, int n);
+int		tokenize(t_list **tokens, char *str);
 
-int		data_length(char *wrd, t_list *var_list);
-int		populate_data(char *wd, t_list *var_list, char *data);
-void	refine_token(t_token *token, t_list *var_list, char *data, int type);
-int		preprocess_token(t_list *token_list, t_list *var_list);
+int		resulting_length(char *line, t_list *vars, int *count);
+void	populate_result(char *line, t_list *vars, char *res);
+char	*preprocess_line(char *line, t_list *vars);
 
 int		interpolation_length(int *i, char *str, t_list *var_list);
 void	interpolation_value(int *i, char *str, t_list *var_list, char **data);

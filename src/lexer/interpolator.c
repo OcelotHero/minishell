@@ -25,59 +25,62 @@ static int	n_digit(int num)
 	return (n + 1);
 }
 
+char	*var_value(char *key, t_list *var_list)
+{
+	int		i;
+	t_list	*node;
+
+	node = var_list;
+	while (node)
+	{
+		i = 0;
+		while (((char *)node->content)[i] == *(key + i))
+			i++;
+		if (((char *)node->content)[i] == '=' &&
+			!ft_isalnum(*(key + i)) && *(key + i) != '_')
+			return (&((char *)node->content)[i + 1]);
+		node = node->next;
+	}
+	return (NULL);
+}
+
 int	interpolation_length(int *i, char *str, t_list *var_list)
 {
-	int		j;
-	t_list	*node;
+	int		count;
+	char	*val;
 
 	if (!ft_isalnum(str[*i + 1]) && str[*i + 1] != '?' && str[*i + 1] != '_')
 		return (1);
 	if (ft_isdigit(str[*i + 1]) || str[*i + 1] == '?')
 		return ((str[++(*i)] == '?') * n_digit(errno));
-	node = var_list;
-	while (node)
-	{
-		j = 0;
-		while (((char *)node->content)[j] == str[*i + 1 + j])
-			j++;
-		if (((char *)node->content)[j] == '=' &&
-			!ft_isalnum(str[*i + 1 + j]) && str[*i + 1 + j] != '_')
-		{
-			*i += j;
-			return (ft_strlen((char *)node->content) - j - 1);
-		}
-		node = node->next;
-	}
+	val = var_value(&str[*i + 1], var_list);
 	while (ft_isalnum(str[*i + 1]) || str[*i + 1] == '_')
 		(*i)++;
-	return (0);
+	if (!val)
+		return (0);
+	count = 0;
+	while(*val)
+		count += 1 + (*(val++) == '\\');
+	return (count);
 }
 
 void	interpolation_value(int *i, char *str, t_list *var_list, char **data)
 {
-	int		j;
-	int		n;
-	t_list	*node;
+	char	*val;
 
-	node = var_list;
-	while (node)
-	{
-		j = 0;
-		while (((char *)node->content)[j] == str[*i + 1 + j])
-			j++;
-		if (((char *)node->content)[j] == '=' &&
-			!ft_isalnum(str[*i + 1 + j]) && str[*i + 1 + j] != '_')
-		{
-			*i += j;
-			n = ft_strlen((char *)node->content) - j - 1;
-			ft_memcpy(*data, &((char *)node->content)[j + 1], n);
-			*data += n;
-			return ;
-		}
-		node = node->next;
-	}
+	val = var_value(&str[*i + 1], var_list);
 	while (ft_isalnum(str[*i + 1]) || str[*i + 1] == '_')
 		(*i)++;
+	if (!val)
+		return ;
+	while(*val)
+	{
+		if (*val == '\'' || *val == '"')
+			*((*data)++) = '\\';
+		*((*data)++) = *(val++);
+		if (*(val - 1) == '\\')
+			*((*data)++) = '\\';
+	}
 }
 
 void	interpolate_var(int *i, char *str, t_list *var_list, char **data)

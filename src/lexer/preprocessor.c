@@ -12,104 +12,73 @@
 
 #include "lexer.h"
 
-int	data_length(char *wrd, t_list *var_list)
+int	resulting_length(char *line, t_list *vars, int *count)
 {
 	int	i;
-	int	count;
-	int	*s;
+	int	state;
 
 	i = -1;
-	count = 0;
-	s = (int []){DEFAULT, DEFAULT};
-	while (wrd[++i])
+	*count = 0;
+	state = DEFAULT;
+	while (line[++i])
 	{
-		if (((wrd[i + 1] == '"' || wrd[i + 1] == '\\' || wrd[i + 1] == '$')
-				&& s[0] == DQUOTE || s[0] == DEFAULT) && wrd[i] == '\\')
+		if (line[i] == '\\' && state != SQUOTE)
 			i++;
-		else if ((wrd[i] == '\'' && s[0] == SQUOTE)
-			|| (wrd[i] == '"' && s[0] == DQUOTE))
-			s[0] = DEFAULT;
-		else if ((wrd[i] == '\'' || wrd[i] == '"') && s[0] == DEFAULT)
-			s[0] = (wrd[i] != '"') * SQUOTE + (wrd[i] == '"') * DQUOTE;
-		if (s[0] != SQUOTE && wrd[i] == '$' && (!i || wrd[i - 1] != '\\'))
-			count += interpolation_length(&i, wrd, var_list);
-		else if (s[0] == s[1])
-			count++;
-		s[1] = s[0];
-	}
-	return (count);
-}
-
-int	populate_data(char *wrd, t_list *var_list, char *data)
-{
-	int	*i;
-	int	*s;
-
-	i = (int []){-1, 0};
-	s = (int []){DEFAULT, DEFAULT};
-	while (wrd[++(*i)])
-	{
-		if (((wrd[*i + 1] == '"' || wrd[*i + 1] == '\\' || wrd[*i + 1] == '$')
-				&& s[0] == DQUOTE || s[0] == DEFAULT) && wrd[*i] == '\\')
-			(*i)++;
-		else if ((wrd[*i] == '\'' && s[0] == SQUOTE)
-			|| (wrd[*i] == '"' && s[0] == DQUOTE))
-			s[0] = DEFAULT;
-		else if ((wrd[*i] == '\'' || wrd[*i] == '"') && s[0] == DEFAULT)
-			s[0] = (wrd[*i] != '"') * SQUOTE + (wrd[*i] == '"') * DQUOTE;
-		if (s[0] != SQUOTE && wrd[*i] == '$' && (!(*i) || wrd[*i - 1] != '\\'))
-			interpolate_var(i, wrd, var_list, &data);
-		else if (s[0] == s[1])
-			*(data++) = wrd[*i];
-		if (s[0] != SQUOTE && wrd[*i] == '*' && (!(*i) || wrd[*i - 1] != '\\'))
-			i[1] = 1;
-		s[1] = s[0];
-	}
-	*data = '\0';
-	return (i[1]);
-}
-
-void	refine_token(t_token *token, t_list *var_list, char *data, int type)
-{
-	if (populate_data(token->data, var_list, data))
-		token->type = WILD * BONUS;
-	free(token->data);
-	token->data = data;
-	if (token->type != WILD)
-	{
-		if (type & (LESS | GREAT | DLESS | DGREAT))
-			token->type = FILES;
+		else if ((line[i] == '\'' && state == SQUOTE)
+			|| (line[i] == '"' && state == DQUOTE))
+			state = DEFAULT;
+		else if ((line[i] == '\'' || line[i] == '"') && state == DEFAULT)
+			state = (line[i] != '"') * SQUOTE + (line[i] == '"') * DQUOTE;
+		if (state != SQUOTE && line[i] == '$' && (!i || line[i - 1] != '\\'))
+			*count += interpolation_length(&i, line, vars);
 		else
-			token->type = CMD * (type >= SPACES) + ARGS * (type < SPACES);
-		if (data[0] == '-' && (ft_isalnum(data[1])
-				|| (data[1] == '-' && ft_isalpha(data[2]))))
-			token->type = OPTS1 + (data[1] == '-') * (OPTS2 - OPTS1);
+			*count += 1 + ((line[i] == '\'' || line[i] == '"')
+				|| (i && line[i - 1] == '\\'));
 	}
-	// else if ()
+	return (state);
 }
 
-int	preprocess_token(t_list *token_list, t_list *var_list)
+void	populate_result(char *line, t_list *vars, char *res)
 {
-	int		type;
-	char	*data;
-	t_list	*node;
-	t_token	*token;
+	int	i;
+	int	state;
 
-	node = token_list;
-	type = SPACES;
-	while (node)
+	i = -1;
+	state = DEFAULT;
+	while (line[++i])
 	{
-		token = (t_token *)node->content;
-		if (token->type == WORD)
-		{
-			data = malloc(sizeof(*data)
-					* (data_length(token->data, var_list) + 1));
-			if (!data)
-				return (1);
-			refine_token(token, var_list, data, type);
-		}
-		type = token->type;
-		node = node->next;
+		if (line[i] == '\\' && state != SQUOTE)
+			*(res++) = line[i++];
+		else if ((line[i] == '\'' && state == SQUOTE)
+			|| (line[i] == '"' && state == DQUOTE))
+			state = DEFAULT;
+		else if ((line[i] == '\'' || line[i] == '"') && state == DEFAULT)
+			state = (line[i] != '"') * SQUOTE + (line[i] == '"') * DQUOTE;
+		if (state != SQUOTE && line[i] == '$' && (!i || line[i - 1] != '\\'))
+			interpolate_var(&i, line, vars, &res);
+		else
+			*(res++) = line[i];
 	}
-	return (0);
+	*res = '\0';
+}
+
+char	*preprocess_line(char *line, t_list *vars)
+{
+	int		n;
+	int		state;
+	char	*res;
+
+	state = resulting_length(line, vars, &n);
+	if (state != DEFAULT)
+	{
+		printf("unexpected EOF while looking for matching %c\n",
+			(state == SQUOTE) * '\'' + (state != SQUOTE) * '"');
+		return (NULL);
+	}
+	res = malloc(sizeof(*res) * (n + 1));
+	if (!res)
+		return (NULL);
+	populate_result(line, vars, res);
+	// printf("%5d, %s\n", n, res);
+	return (res);
 }

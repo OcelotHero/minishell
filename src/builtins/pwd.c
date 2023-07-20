@@ -12,17 +12,17 @@
 
 #include "builtins.h"
 
-int	builtin_pwd(t_list **token_list, t_list **var_list)
+int	builtin_pwd(char **opts, t_list **var_list)
 {
 	char	buf[BUFSIZ];
 	char	*dir;
 
 	(void) var_list;
-	*token_list = (*token_list)->next;
+	(void) opts;
 	dir = getcwd(buf, BUFSIZ);
 	if (dir)
 		printf("%s\n", dir);
 	else
 		perror("pwd");
-	return (!dir);
+	exit(!dir);
 }

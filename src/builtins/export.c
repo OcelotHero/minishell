@@ -12,50 +12,57 @@
 
 #include "builtins.h"
 
-static int	export_var(t_list **var_list, t_token *token, int n)
+static int	export_var(t_list **var_list, char **arg, int n)
 {
 	t_list	*node;
 
 	node = *var_list;
 	while (node)
 	{
-		if (!ft_strncmp(node->content, token->data, n + 1))
+		if (!ft_strncmp(node->content, *arg, n + 1))
 		{
-			node->content = token->data;
-			token->data = NULL;
-			break ;
+			free(node->content);
+			node->content = *arg;
+			*arg = NULL;
+			return (0);
 		}
 		node = node->next;
 	}
-	if (token->data)
-	{
-		node = ft_lstnew(token->data);
-		if (!node)
-			return (1);
-		ft_lstadd_front(var_list, node);
-		token->data = NULL;
-	}
+	node = ft_lstnew(*arg);
+	if (!node)
+		return (1);
+	ft_lstadd_front(var_list, node);
+	*arg = NULL;
 	return (0);
 }
 
-int	builtin_export(t_list **token_list, t_list **var_list)
+
+
+int	builtin_export(char **opts, t_list **var_list)
 {
-	int		type;
+	int		i;
 	char	*loc;
 
-	*token_list = (*token_list)->next;
-	type = ((t_token *)(*token_list)->content)->type;
-	while (type < SPACES)
+	while (*(++opts))
 	{
-		loc = ft_strchr(((t_token *)(*token_list)->content)->data, '=');
-		if (loc)
+		i = 0;
+		if (ft_isalpha((*opts)[i]) || (*opts)[i] == '_')
 		{
-			if (export_var(var_list, (*token_list)->content,
-				loc - ((t_token *)(*token_list)->content)->data))
-				return (1);
+			i++;
+			while ((*opts)[i] && (*opts)[i] != '=')
+			{
+				if (!ft_isalnum((*opts)[i]) && (*opts)[i] != '_')
+					break ;
+				i++;
+			}
 		}
-		*token_list = (*token_list)->next;
-		type = ((t_token *)(*token_list)->content)->type;
+		if ((*opts)[i] != '=')
+		{
+			printf("export: `%s': not a valid identifier", *opts);
+			exit(1);
+		}
+		if (export_var(var_list, opts, i))
+			exit(1);
 	}
-	return (0);
+	exit(0);
 }

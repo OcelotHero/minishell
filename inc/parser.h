@@ -13,12 +13,14 @@
 #ifndef PARSER_H
 # define PARSER_H
 
-# include "libft.h"
+# include "../lib/libft/inc/libft.h"
 # include "types.h"
 # include "builtins.h"
 
 # include <stdio.h>
 # include <fcntl.h>
+# include <sys/types.h>
+# include <sys/wait.h>
 # include <readline/readline.h>
 
 void	ast_clear(t_ast **root, void (*del)(t_list *));
@@ -30,9 +32,9 @@ int		factor(t_list **token_list, t_ast **node);
 int		term(t_list **token_list, t_ast **node);
 int		expr(t_list **token_list, t_ast **node);
 
-int		execute_cmd(t_list **token_list, t_list **var_list);
-int		evaluate_expr(t_ast *ast, t_list **var_list);
-int		interpret_ast(t_ast *ast, t_list **var_list);
+int		execute_cmd(t_list **var_list, t_cmd *cmd);
+int		evaluate_expr(t_ast *ast, t_list **var_list, int valid);
+int		interpret_ast(t_ast *ast, t_list **var_list, int valid);
 
 int		get_heredoc(char *limiter, char *prompt);
 

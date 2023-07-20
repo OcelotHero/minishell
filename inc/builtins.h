@@ -13,19 +13,19 @@
 #ifndef BUILTINS_H
 # define BUILTINS_H
 
-# include "libft.h"
+# include "../lib/libft/inc/libft.h"
 # include "types.h"
 
 # include <errno.h>
 # include <stdio.h>
 # include <unistd.h>
 
-int	builtin_cd(t_list **token_list, t_list **var_list);
-int	builtin_echo(t_list **token_list, t_list **var_list);
-int	builtin_env(t_list **token_list, t_list **var_list);
-int	builtin_exit(t_list **token_list, t_list **var_list);
-int	builtin_export(t_list **token_list, t_list **var_list);
-int	builtin_pwd(t_list **token_list, t_list **var_list);
-int	builtin_unset(t_list **token_list, t_list **var_list);
+int	builtin_cd(char **opts, t_list **var_list);
+int	builtin_echo(char **opts, t_list **var_list);
+int	builtin_env(char **opts, t_list **var_list);
+int	builtin_exit(char **opts, t_list **var_list);
+int	builtin_export(char **opts, t_list **var_list);
+int	builtin_pwd(char **opts, t_list **var_list);
+int	builtin_unset(char **opts, t_list **var_list);
 
 #endif

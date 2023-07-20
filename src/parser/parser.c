@@ -48,10 +48,7 @@ int	unit(t_list **token_list, t_ast **node)
 	if (type & (CMD | WILD | LESS | GREAT | DLESS | DGREAT))
 	{
 		error = consume_token(token_list, type);
-		if (!error)
-			*node = ast_new(NULL, token, NULL);
-		else
-			*node = ast_new(NULL, ft_lstlast(*token_list), NULL);
+		*node = ast_new(NULL, token, NULL);
 		return (error + !error * !(*node));
 	}
 	return (2);

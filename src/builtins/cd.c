@@ -12,9 +12,18 @@
 
 #include "builtins.h"
 
-int	builtin_cd(t_list **token_list, t_list **var_list)
+int	builtin_cd(char **opts, t_list **var_list)
 {
+	int	i;
+
 	(void) var_list;
-	*token_list = (*token_list)->next;
-	return (chdir(((t_token *)(*token_list)->content)->data));
+	i = 0;
+	while (opts[i])
+		i++;
+	if (i != 2)
+	{
+		printf("cd: too many arguments\n");
+		exit(1);
+	}
+	exit(chdir(opts[1]));
 }

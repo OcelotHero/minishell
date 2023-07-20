@@ -12,30 +12,31 @@
 
 #include "builtins.h"
 
-int	builtin_echo(t_list **token_list, t_list **var_list)
+int	builtin_echo(char **opts, t_list **var_list)
 {
-	int	type;
+	int	i;
+	int	j;
 	int	flag;
 
 	(void) var_list;
+	i = 0;
+	j = 0;
 	flag = 0;
-	*token_list = (*token_list)->next;
-	type = ((t_token *)(*token_list)->content)->type;
-	while (type < SPACES)
+	while (opts[++i])
 	{
-		if (!ft_strncmp(((t_token *)(*token_list)->content)->data, "-n", 2))
-			flag = 1;
-		else
+		if (i == 1 && opts[i][j++] == '-')
 		{
-			if (flag & 2)
-				printf(" ");
-			flag |= 2;
-			printf("%s",((t_token *)(*token_list)->content)->data);
+			while (opts[i][j++] == 'n')
+				flag = opts[i][j] == '\0';
+			if (flag)
+				continue ;
 		}
-		*token_list = (*token_list)->next;
-		type = ((t_token *)(*token_list)->content)->type;
+		if (flag & 2)
+			printf(" ");
+		flag |= 2;
+		printf("%s", opts[i]);
 	}
 	if (!(flag & 1))
 		printf("\n");
-	return (0);
+	exit(0);
 }

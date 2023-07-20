@@ -12,16 +12,20 @@
 
 #include "builtins.h"
 
-int	builtin_env(t_list **token_list, t_list **var_list)
+int	builtin_env(char **opts, t_list **var_list)
 {
 	t_list	*node;
 
-	*token_list = (*token_list)->next;
+	if (opts[1] != NULL)
+	{
+		printf("env: `%s': No such file or directory\n", opts[1]);
+		exit(1);
+	}
 	node = *var_list;
 	while (node)
 	{
 		printf("%s\n", (char *)node->content);
 		node = node->next;
 	}
-	return (0);
+	exit(0);
 }

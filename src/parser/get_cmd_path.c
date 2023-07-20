@@ -6,7 +6,7 @@
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/17 18:22:23 by rraharja          #+#    #+#             */
-/*   Updated: 2023/07/16 03:19:53 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/07/17 18:18:24 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ static void	get_env_cmd_path(char *cmd, char *path, t_list *var_list)
 	while (var_list && !paths)
 	{
 		if (!ft_strncmp(var_list->content, "PATH=", 5))
-			paths = ft_strrchr(var_list->content, '=') + 1;
+			paths = ft_strchr(var_list->content, '=') + 1;
 		var_list = var_list->next;
 	}
 	sep = ":";
@@ -53,6 +53,8 @@ void	get_cmd_path(char *cmd, char *path, t_list *var_list)
 {
 	int	i;
 
+	if (!ft_strlen(cmd))
+		return ;
 	i = 0;
 	if (access(cmd, F_OK) == 0)
 	{
