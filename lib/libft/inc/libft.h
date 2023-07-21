@@ -52,6 +52,9 @@ size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize);
 // Type conversion
 int		ft_atoi(const char *str);
 
+// Other
+void	ft_swap(int	*a, int *b);
+
 /*------ Supplementary functions ------*/
 // IO operations
 void	ft_putnbr_fd(int n, int fd);

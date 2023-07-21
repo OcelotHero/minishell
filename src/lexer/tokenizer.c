@@ -35,62 +35,7 @@ int	token_type(char *str)
 	return (WORD);
 }
 
-int	data_length(char *wrd, int n)
-{
-	int	i;
-	int	count;
-	int	*s;
-
-	i = -1;
-	count = 0;
-	s = (int []){DEFAULT, DEFAULT};
-	while (wrd[++i] && i < n)
-	{
-		if (((wrd[i + 1] == '"' || wrd[i + 1] == '\\' || wrd[i + 1] == '$')
-				&& s[0] == DQUOTE || s[0] == DEFAULT) && wrd[i] == '\\')
-			i++;
-		else if ((wrd[i] == '\'' && s[0] == SQUOTE)
-			|| (wrd[i] == '"' && s[0] == DQUOTE))
-			s[0] = DEFAULT;
-		else if ((wrd[i] == '\'' || wrd[i] == '"') && s[0] == DEFAULT)
-			s[0] = (wrd[i] != '"') * SQUOTE + (wrd[i] == '"') * DQUOTE;
-		if (s[0] == s[1])
-			count++;
-		s[1] = s[0];
-	}
-	return (count);
-}
-
-int	populate_data(char *wrd, int n, char *data)
-{
-	int	i;
-	int	wild;
-	int	*s;
-
-	i = -1;
-	wild = 0;
-	s = (int []){DEFAULT, DEFAULT};
-	while (wrd[++i] && i < n)
-	{
-		if (((wrd[i + 1] == '"' || wrd[i + 1] == '\\' || wrd[i + 1] == '$')
-				&& s[0] == DQUOTE || s[0] == DEFAULT) && wrd[i] == '\\')
-			i++;
-		else if ((wrd[i] == '\'' && s[0] == SQUOTE)
-			|| (wrd[i] == '"' && s[0] == DQUOTE))
-			s[0] = DEFAULT;
-		else if ((wrd[i] == '\'' || wrd[i] == '"') && s[0] == DEFAULT)
-			s[0] = (wrd[i] != '"') * SQUOTE + (wrd[i] == '"') * DQUOTE;
-		if (s[0] == s[1])
-			*(data++) = wrd[i];
-		if (s[0] != SQUOTE && wrd[i] == '*' && (!i || wrd[i - 1] != '\\'))
-			wild = 1;
-		s[1] = s[0];
-	}
-	*data = '\0';
-	return (wild);
-}
-
-t_token	*refine_token(char *str, int n, char *data, int type)
+t_token	*refine_token(char *str, int *n, char *data, t_list *vars)
 {
 	t_token	*token;
 
@@ -100,34 +45,36 @@ t_token	*refine_token(char *str, int n, char *data, int type)
 		free(data);
 		return (NULL);
 	}
-	token->type = token_type(str);
-	if (populate_data(str, n, data))
-		token->type = WILD * BONUS;
-	token->data = data;
+	token->type = populate_data(str, n[0], data, vars);
+	if ((token->type & WILD) && !BONUS)
+		token->type ^= WILD;
 	if (token->type == WORD)
+		token->type = token_type(str);
+	token->data = data;
+	if (token->type == WORD || token->type == VARS)
 	{
-		if (type & (LESS | GREAT | DLESS | DGREAT))
-			token->type = FILES;
-		else
-			token->type = CMD * (type >= SPACES) + ARGS * (type < SPACES);
-		if (data[0] == '-' && (ft_isalnum(data[1])
+		if (n[1] & (LESS | GREAT | DLESS | DGREAT))
+			token->type |= FILES;
+		else if (data[0] == '-' && (ft_isalnum(data[1])
 				|| (data[1] == '-' && ft_isalpha(data[2]))))
-			token->type = OPTS1 + (data[1] == '-') * (OPTS2 - OPTS1);
+			token->type |= OPTS1 + (data[1] == '-') * (OPTS2 - OPTS1);
+		else
+			token->type |= CMD * (n[1] >= SPACES) + ARGS * (n[1] < SPACES);
 	}
 	return (token);
 }
 
-int	save_token(t_list **tokens, char *str, int n)
+int	save_token(t_list **tokens, char *str, int n, t_list *vars)
 {
 	static int	type = SPACES;
 	char		*data;
 	t_list		*node;
 	t_token		*token;
 
-	data = malloc(sizeof(*data) * (data_length(str, n) + 1));
+	data = malloc(sizeof(*data) * (data_length(str, n, vars) + 1));
 	if (!data)
 		return (1);
-	token = refine_token(str, n, data, type);
+	token = refine_token(str, (int []){n, type}, data, vars);
 	if (!token)
 		return (1);
 	node = ft_lstnew(token);
@@ -142,7 +89,7 @@ int	save_token(t_list **tokens, char *str, int n)
 	return (0);
 }
 
-int	tokenize_line(t_list **tokens, int *n, char *str)
+int	tokenize_line(t_list **tokens, int *n, char *str, t_list *vars)
 {
 	int	type;
 	int	error;
@@ -153,16 +100,16 @@ int	tokenize_line(t_list **tokens, int *n, char *str)
 	{
 		if ((n[0] && token_type(&str[n[0] - 1]) < SPACES)
 			|| (n[0] && (n[0] - 1) && str[n[0] - 2] == '\\'))
-			error = save_token(tokens, &str[n[1]], n[0] - n[1]);
+			error = save_token(tokens, &str[n[1]], n[0] - n[1], vars);
 		if (!error && type > SPACES)
-			error = save_token(tokens, &str[n[0]], 1 + (type >= DLESS));
+			error = save_token(tokens, &str[n[0]], 1 + (type >= DLESS), vars);
 		n[0] += (type >= DLESS);
 		n[1] = n[0] + 1;
 	}
 	return (error);
 }
 
-int	tokenize(t_list **tokens, char *str)
+int	tokenize(t_list **tokens, char *str, t_list *vars)
 {
 	int	*n;
 	int	state;
@@ -178,8 +125,14 @@ int	tokenize(t_list **tokens, char *str)
 			state = DEFAULT;
 		else if ((str[n[0]] == '\'' || str[n[0]] == '"') && state == DEFAULT)
 			state = (str[n[0]] != '"') * SQUOTE + (str[n[0]] == '"') * DQUOTE;
-		if (state == DEFAULT && tokenize_line(tokens, n, str))
+		if (state == DEFAULT && tokenize_line(tokens, n, str, vars))
 			return (1);
+	}
+	if (state != DEFAULT)
+	{
+		printf("unexpected EOF while looking for matching %c\n",
+			(state == SQUOTE) * '\'' + (state != SQUOTE) * '"');
+		return (0);
 	}
 	return (0);
 }

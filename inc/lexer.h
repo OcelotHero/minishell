@@ -20,12 +20,13 @@
 # include <errno.h>
 
 int		token_type(char *str);
-int		save_token(t_list **tokens, char *str, int n);
-int		tokenize(t_list **tokens, char *str);
+t_token	*refine_token(char *str, int *n, char *data, t_list *vars);
+int		save_token(t_list **tokens, char *str, int n, t_list *vars);
+int		tokenize_line(t_list **tokens, int *n, char *str, t_list *vars);
+int		tokenize(t_list **tokens, char *str,  t_list *vars);
 
-int		resulting_length(char *line, t_list *vars, int *count);
-void	populate_result(char *line, t_list *vars, char *res);
-char	*preprocess_line(char *line, t_list *vars);
+int		data_length(char *wrd, int n, t_list *vars);
+int		populate_data(char *wrd, int n, char *data, t_list *vars);
 
 int		interpolation_length(int *i, char *str, t_list *var_list);
 void	interpolation_value(int *i, char *str, t_list *var_list, char **data);

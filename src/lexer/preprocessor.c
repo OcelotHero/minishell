@@ -12,73 +12,58 @@
 
 #include "lexer.h"
 
-int	resulting_length(char *line, t_list *vars, int *count)
+int	data_length(char *wrd, int n, t_list *vars)
 {
 	int	i;
+	int	count;
 	int	state;
 
 	i = -1;
-	*count = 0;
+	count = 0;
 	state = DEFAULT;
-	while (line[++i])
+	while (wrd[++i] && i < n)
 	{
-		if (line[i] == '\\' && state != SQUOTE)
+		if (((wrd[i + 1] == '"' || wrd[i + 1] == '\\' || wrd[i + 1] == '$')
+				&& state == DQUOTE || state == DEFAULT) && wrd[i] == '\\')
 			i++;
-		else if ((line[i] == '\'' && state == SQUOTE)
-			|| (line[i] == '"' && state == DQUOTE))
+		else if ((wrd[i] == '\'' && state == SQUOTE)
+			|| (wrd[i] == '"' && state == DQUOTE))
 			state = DEFAULT;
-		else if ((line[i] == '\'' || line[i] == '"') && state == DEFAULT)
-			state = (line[i] != '"') * SQUOTE + (line[i] == '"') * DQUOTE;
-		if (state != SQUOTE && line[i] == '$' && (!i || line[i - 1] != '\\'))
-			*count += interpolation_length(&i, line, vars);
+		else if ((wrd[i] == '\'' || wrd[i] == '"') && state == DEFAULT)
+			state = (wrd[i] != '"') * SQUOTE + (wrd[i] == '"') * DQUOTE;
+		if (state != SQUOTE && wrd[i] == '$' && (!i || wrd[i - 1] != '\\'))
+			count += interpolation_length(&i, wrd, vars);
 		else
-			*count += 1 + ((line[i] == '\'' || line[i] == '"')
-				|| (i && line[i - 1] == '\\'));
+			count++;
 	}
-	return (state);
+	return (count);
 }
 
-void	populate_result(char *line, t_list *vars, char *res)
+int	populate_data(char *wrd, int n, char *data, t_list *vars)
 {
 	int	i;
-	int	state;
+	int	*s;
 
 	i = -1;
-	state = DEFAULT;
-	while (line[++i])
+	s = (int []){DEFAULT, WORD};
+	while (wrd[++i] && i < n)
 	{
-		if (line[i] == '\\' && state != SQUOTE)
-			*(res++) = line[i++];
-		else if ((line[i] == '\'' && state == SQUOTE)
-			|| (line[i] == '"' && state == DQUOTE))
-			state = DEFAULT;
-		else if ((line[i] == '\'' || line[i] == '"') && state == DEFAULT)
-			state = (line[i] != '"') * SQUOTE + (line[i] == '"') * DQUOTE;
-		if (state != SQUOTE && line[i] == '$' && (!i || line[i - 1] != '\\'))
-			interpolate_var(&i, line, vars, &res);
+		if (((wrd[i + 1] == '"' || wrd[i + 1] == '\\' || wrd[i + 1] == '$')
+				&& s[0] == DQUOTE || s[0] == DEFAULT) && wrd[i] == '\\')
+			i++;
+		else if ((wrd[i] == '\'' && s[0] == SQUOTE)
+			|| (wrd[i] == '"' && s[0] == DQUOTE))
+			s[0] = DEFAULT;
+		else if ((wrd[i] == '\'' || wrd[i] == '"') && s[0] == DEFAULT)
+			s[0] = (wrd[i] != '"') * SQUOTE + (wrd[i] == '"') * DQUOTE;
+		if (s[0] != SQUOTE && (wrd[i] == '*' || wrd[i] == '$')
+			&& (!i || wrd[i - 1] != '\\'))
+			s[1] = ((wrd[i] == '*') * WILD) | ((wrd[i] == '$') * VARS);
+		if (s[0] != SQUOTE && wrd[i] == '$' && (!i || wrd[i - 1] != '\\'))
+			interpolate_var(&i, wrd, vars, &data);
 		else
-			*(res++) = line[i];
+			*(data++) = wrd[i];
 	}
-	*res = '\0';
-}
-
-char	*preprocess_line(char *line, t_list *vars)
-{
-	int		n;
-	int		state;
-	char	*res;
-
-	state = resulting_length(line, vars, &n);
-	if (state != DEFAULT)
-	{
-		printf("unexpected EOF while looking for matching %c\n",
-			(state == SQUOTE) * '\'' + (state != SQUOTE) * '"');
-		return (NULL);
-	}
-	res = malloc(sizeof(*res) * (n + 1));
-	if (!res)
-		return (NULL);
-	populate_result(line, vars, res);
-	// printf("%5d, %s\n", n, res);
-	return (res);
+	*data = '\0';
+	return (s[1]);
 }
