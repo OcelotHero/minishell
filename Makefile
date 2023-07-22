@@ -2,7 +2,7 @@
 # Common source files
 SRC_BIN = cd echo env exit export pwd unset
 SRC_PAR	= ast parser interpreter get_cmd_path get_heredoc
-SRC_LEX = interpolator preprocessor tokenizer
+SRC_LEX = interpolator preprocessor tokenizer postprocessor trimmer
 SRC_UTL =
 
 # Mandatory source files

@@ -1,4 +1,7 @@
+/*
 obj/
 minishell
 lib/libft/obj/
 lib/libft/libft.a
+!Makefile
+!.gitignore

@@ -45,13 +45,13 @@ t_token	*refine_token(char *str, int *n, char *data, t_list *vars)
 		free(data);
 		return (NULL);
 	}
-	token->type = populate_data(str, n[0], data, vars);
+	token->type = populate_data(str, n, data, vars);
 	if ((token->type & WILD) && !BONUS)
 		token->type ^= WILD;
 	if (token->type == WORD)
 		token->type = token_type(str);
 	token->data = data;
-	if (token->type == WORD || token->type == VARS)
+	if (token->type == WORD)
 	{
 		if (n[1] & (LESS | GREAT | DLESS | DGREAT))
 			token->type |= FILES;
@@ -71,7 +71,8 @@ int	save_token(t_list **tokens, char *str, int n, t_list *vars)
 	t_list		*node;
 	t_token		*token;
 
-	data = malloc(sizeof(*data) * (data_length(str, n, vars) + 1));
+	data = malloc(sizeof(*data)
+		* (data_length(str, (int []){n, type}, vars) + 1));
 	if (!data)
 		return (1);
 	token = refine_token(str, (int []){n, type}, data, vars);
@@ -96,10 +97,9 @@ int	tokenize_line(t_list **tokens, int *n, char *str, t_list *vars)
 
 	error = 0;
 	type = token_type(&str[n[0]]);
-	if (type >= SPACES && (!n[0] || str[n[0] - 1] != '\\'))
+	if (type >= SPACES)
 	{
-		if ((n[0] && token_type(&str[n[0] - 1]) < SPACES)
-			|| (n[0] && (n[0] - 1) && str[n[0] - 2] == '\\'))
+		if ((n[0] && token_type(&str[n[0] - 1]) < SPACES))
 			error = save_token(tokens, &str[n[1]], n[0] - n[1], vars);
 		if (!error && type > SPACES)
 			error = save_token(tokens, &str[n[0]], 1 + (type >= DLESS), vars);
@@ -125,14 +125,15 @@ int	tokenize(t_list **tokens, char *str, t_list *vars)
 			state = DEFAULT;
 		else if ((str[n[0]] == '\'' || str[n[0]] == '"') && state == DEFAULT)
 			state = (str[n[0]] != '"') * SQUOTE + (str[n[0]] == '"') * DQUOTE;
+		if (state != SQUOTE && (!n[0] || str[n[0] - 1] == '\\') && !str[n[0]])
+			break ;
 		if (state == DEFAULT && tokenize_line(tokens, n, str, vars))
 			return (1);
 	}
 	if (state != DEFAULT)
-	{
 		printf("unexpected EOF while looking for matching %c\n",
 			(state == SQUOTE) * '\'' + (state != SQUOTE) * '"');
-		return (0);
-	}
-	return (0);
+	else if (n[0] == n[2])
+		printf("unexpected EOF with escaped character\n");
+	return (state != DEFAULT || n[0] == n[2]);
 }

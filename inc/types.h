@@ -24,7 +24,7 @@ enum e_token_types {
 	ARGS	= 0x00008,
 	FILES	= 0x00010,
 	WILD	= 0x00020,
-	VARS	= 0x00040,
+	QUOT	= 0x00040,
 	SPACES	= 0x00080,
 	END		= 0x00100,
 	LPAREN	= 0x00200,
