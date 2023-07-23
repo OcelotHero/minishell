@@ -99,7 +99,7 @@ int	tokenize_line(t_list **tokens, int *n, char *str, t_list *vars)
 	type = token_type(&str[n[0]]);
 	if (type >= SPACES)
 	{
-		if ((n[0] && token_type(&str[n[0] - 1]) < SPACES))
+		if (type >= SPACES && n[1] != n[0])
 			error = save_token(tokens, &str[n[1]], n[0] - n[1], vars);
 		if (!error && type > SPACES)
 			error = save_token(tokens, &str[n[0]], 1 + (type >= DLESS), vars);
@@ -118,6 +118,8 @@ int	tokenize(t_list **tokens, char *str, t_list *vars)
 	state = DEFAULT;
 	while (++(n[0]) <= n[2])
 	{
+		if (state != SQUOTE && str[n[0]] == '\\' && !str[n[0] + 1])
+			break ;
 		if (state != SQUOTE && str[n[0]] == '\\')
 			(n[0])++;
 		else if ((str[n[0]] == '\'' && state == SQUOTE)
@@ -125,15 +127,13 @@ int	tokenize(t_list **tokens, char *str, t_list *vars)
 			state = DEFAULT;
 		else if ((str[n[0]] == '\'' || str[n[0]] == '"') && state == DEFAULT)
 			state = (str[n[0]] != '"') * SQUOTE + (str[n[0]] == '"') * DQUOTE;
-		if (state != SQUOTE && (!n[0] || str[n[0] - 1] == '\\') && !str[n[0]])
-			break ;
-		if (state == DEFAULT && tokenize_line(tokens, n, str, vars))
+		else if (state == DEFAULT && tokenize_line(tokens, n, str, vars))
 			return (1);
 	}
 	if (state != DEFAULT)
-		printf("unexpected EOF while looking for matching %c\n",
+		printf("unexpected EOF while looking for matching `%c'\n",
 			(state == SQUOTE) * '\'' + (state != SQUOTE) * '"');
-	else if (n[0] == n[2])
+	else if (n[0] <= n[2])
 		printf("unexpected EOF with escaped character\n");
 	return (state != DEFAULT || n[0] == n[2]);
 }

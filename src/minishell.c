@@ -50,8 +50,8 @@ int	main(int narg, char **args, char **envs)
 	// 	{
 	// 		if (!line[1] || ft_strcmp(line[0], line[1]))
 	// 			add_history(line[0]);
-	// 		// postprocess_tokens(token_list);
-	// 		// trim_token(&token_list);
+	// 		postprocess_tokens(token_list);
+	// 		trim_token(&token_list);
 	// 		// tmp = token_list;
 	// 		// if (((t_token *)tmp->content)->type != END)
 	// 		// {

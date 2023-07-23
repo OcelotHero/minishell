@@ -96,9 +96,10 @@ int	p(t_list **tokens, int *n, char *wrd)
 	int	type;
 
 	type = token_type(&wrd[n[0]]);
-	if ((type & (SPACES | END)) && (!n[0] || wrd[n[0] - 1] != '\\'))
+	if (type & (SPACES | END))
 	{
-		if (split_t(tokens, &wrd[n[1]], n[0] - n[1]))
+		if ((n[1] != n[0] || (n[2] > 0 && n[2] == n[0]))
+			&& split_t(tokens, &wrd[n[1]], n[0] - n[1]))
 			return (1);
 		n[1] = n[0] + 1;
 	}
@@ -123,7 +124,7 @@ int	postprocess_tokens(t_list *tokens)
 				n[3] = DEFAULT;
 			else if ((s[n[0]] == '\'' || s[n[0]] == '"') && n[3] == DEFAULT)
 				n[3] = (s[n[0]] != '"') * SQUOTE + (s[n[0]] == '"') * DQUOTE;
-			if (n[3] == DEFAULT && p(&tokens, n, s))
+			else if (n[3] == DEFAULT && p(&tokens, n, s))
 				return (1);
 		}
 		tokens = tokens->next;
