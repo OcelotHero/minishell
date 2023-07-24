@@ -15,6 +15,7 @@
 
 # include "libft.h"
 # include "types.h"
+# include "utils.h"
 
 # include <stdio.h>
 # include <errno.h>

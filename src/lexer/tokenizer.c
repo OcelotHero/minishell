@@ -14,6 +14,8 @@
 
 int	token_type(char *str)
 {
+	// if ((*str == '\t' || *str == ' '))
+	// 	return (SPACES);
 	if ((*str == '\t' || *str == '\n' || *str == ' '))
 		return (SPACES);
 	if (*str == '(')

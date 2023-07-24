@@ -1,32 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   trimmer.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rraharja <rraharja@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/07/19 15:58:08 by rraharja          #+#    #+#             */
-/*   Updated: 2023/07/19 15:58:08 by rraharja         ###   ########.fr       */
+/*   Created: 2023/07/22 19:17:07 by rraharja          #+#    #+#             */
+/*   Updated: 2023/07/22 19:17:07 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "utils.h"
+#include "lexer.h"
 
-char	*var_value(char *key, t_list *var_list)
+static int	comp_token(const t_token *t1, const t_token *t2)
 {
-	int		i;
-	t_list	*node;
+	return (!(t1->type & (CMD | OPTS1 | OPTS2 | ARGS)) || (t1->type & QUOT)
+		|| ft_strlen(t1->data));
+}
 
-	node = var_list;
-	while (node)
-	{
-		i = 0;
-		while (((char *)node->content)[i] == *(key + i))
-			i++;
-		if (((char *)node->content)[i] == '=' &&
-			!ft_isalnum(*(key + i)) && *(key + i) != '_')
-			return (&((char *)node->content)[i + 1]);
-		node = node->next;
-	}
-	return (NULL);
+static void	free_token(void *token)
+{
+	free(((t_token *)token)->data);
+	free(token);
+}
+
+void	trim_token(t_list **tokens)
+{
+	ft_lstremove_if(tokens, NULL, comp_token, free_token);
 }

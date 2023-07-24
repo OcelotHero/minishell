@@ -13,9 +13,11 @@
 #ifndef PARSER_H
 # define PARSER_H
 
-# include "../lib/libft/inc/libft.h"
+# include "libft.h"
 # include "types.h"
+# include "utils.h"
 # include "builtins.h"
+# include "ft_fprintf.h"
 
 # include <stdio.h>
 # include <fcntl.h>
@@ -36,8 +38,7 @@ int		execute_cmd(t_list **var_list, t_cmd *cmd);
 int		evaluate_expr(t_ast *ast, t_list **var_list, int valid);
 int		interpret_ast(t_ast *ast, t_list **var_list, int valid);
 
-int		get_heredoc(char *limiter, char *prompt);
-
+int		get_heredoc(t_token *token, char *prompt, t_list *var_list);
 void	get_cmd_path(char *cmd, char *path, t_list *var_list);
 
 #endif

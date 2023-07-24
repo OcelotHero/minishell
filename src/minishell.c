@@ -73,6 +73,9 @@ int	main(int narg, char **args, char **envs)
 	// }
 	// ft_lstclear(&var_list, free);
 
+	// line[0] = ft_strrchr(args[2], '\n');
+	// line[0][0] = '\0';
+
 	line[0] = args[2];
 	if (ft_strlen(line[0]) && !tokenize(&token_list, line[0], var_list))
 	{

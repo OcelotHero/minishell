@@ -52,10 +52,10 @@ int	parse_expr(t_list *node, t_list **var_list, t_cmd *cmd, int valid)
 	{
 		if (((t_token *)node->content)->type & (CMD | OPTS1 | OPTS2 | ARGS))
 			cmd->opts[i++] = ((t_token *)node->content)->data;
-		if (((t_token *)node->content)->type == CMD)
+		if (((t_token *)node->content)->type & (CMD | ARGS))
 			get_cmd_path(cmd->opts[0], cmd->path, *var_list);
 		if (((t_token *)node->content)->type == DLESS)
-			error = get_heredoc(((t_token *)node->next->content)->data, "> ");
+			error = get_heredoc(node->next->content, "> ", *var_list);
 		if (((t_token *)node->content)->type & (LESS | GREAT | DLESS | DGREAT)
 			&& !cmd->ior_start)
 			cmd->ior_start = node;
@@ -143,7 +143,7 @@ int	evaluate_expr(t_ast *ast, t_list **var_list, int valid)
 	int		status;
 	t_cmd	cmd;
 
-	cmd = (t_cmd){0, {0, 0, 0}, "", NULL, NULL, NULL};
+	cmd = (t_cmd){0, {0, 0, 0}, "", NULL, NULL};
 	proto(ast, var_list, &cmd, valid);
 	if (((t_token *)ast->expr->content)->type
 		& (CMD | LESS | DLESS | GREAT | DGREAT))

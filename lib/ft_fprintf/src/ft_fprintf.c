@@ -1,32 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   ft_fprintf.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rraharja <rraharja@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/07/19 15:58:08 by rraharja          #+#    #+#             */
-/*   Updated: 2023/07/19 15:58:08 by rraharja         ###   ########.fr       */
+/*   Created: 2022/10/18 01:19:54 by rraharja          #+#    #+#             */
+/*   Updated: 2022/10/18 01:19:54 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "utils.h"
+#include "ft_fprintf.h"
 
-char	*var_value(char *key, t_list *var_list)
+int	ft_fprintf(int fd, const char *format, ...)
 {
 	int		i;
-	t_list	*node;
+	int		total;
+	va_list	args;
 
-	node = var_list;
-	while (node)
+	va_start(args, format);
+	total = 0;
+	while (format && *format)
 	{
 		i = 0;
-		while (((char *)node->content)[i] == *(key + i))
-			i++;
-		if (((char *)node->content)[i] == '=' &&
-			!ft_isalnum(*(key + i)) && *(key + i) != '_')
-			return (&((char *)node->content)[i + 1]);
-		node = node->next;
+		while (format[i] && format[i] != '%')
+			write(fd, &format[i++], 1);
+		total += i;
+		format += i;
+		total += ft_parse(fd, &format, args);
 	}
-	return (NULL);
+	va_end(args);
+	return (total);
 }

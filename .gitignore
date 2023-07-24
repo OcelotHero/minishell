@@ -1,7 +1,11 @@
-/*
-obj/
-minishell
-lib/libft/obj/
-lib/libft/libft.a
+*
+!inc/
+!**/inc/**
+!lib/
+!lib/*
+!src/
+!**/src/**
+!*.c
+!*.h
 !Makefile
 !.gitignore

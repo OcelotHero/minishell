@@ -35,18 +35,19 @@ int	data_length(char *wrd, int *n, t_list *vars)
 	state = DEFAULT;
 	while (wrd[++i] && i < n[0])
 	{
-		if (is_escaped(&i, wrd, state, n[1]))
-			count++;
-		else if ((state == SQUOTE && wrd[i] == '\'')
-			|| (state == DQUOTE && wrd[i] == '"'))
-			state = DEFAULT;
-		else if (state == DEFAULT && (wrd[i] == '\'' || wrd[i] == '"'))
-			state = (wrd[i] != '"') * SQUOTE + (wrd[i] == '"') * DQUOTE;
-		if (state != SQUOTE && wrd[i] == '$' && (!i || wrd[i - 1] != '\\')
-			&& n[1] != DLESS)
+		if (state != SQUOTE && wrd[i] == '$' && n[1] != DLESS)
 			count += interpolation_length(&i, wrd, vars);
 		else
+		{
+			if (is_escaped(&i, wrd, state, n[1]))
+				count++;
+			else if ((state == SQUOTE && wrd[i] == '\'')
+				|| (state == DQUOTE && wrd[i] == '"'))
+				state = DEFAULT;
+			else if (state == DEFAULT && (wrd[i] == '\'' || wrd[i] == '"'))
+				state = (wrd[i] != '"') * SQUOTE + (wrd[i] == '"') * DQUOTE;
 			count++;
+		}
 	}
 	return (count);
 }
@@ -60,20 +61,21 @@ int	populate_data(char *wrd, int *n, char *data, t_list *vars)
 	s = (int []){DEFAULT, WORD};
 	while (wrd[++i] && i < n[0])
 	{
-		if (is_escaped(&i, wrd, s[0], n[1]))
-			*(data++) = '\\';
-		else if ((s[0] == SQUOTE && wrd[i] == '\'')
-			|| (s[0] == DQUOTE && wrd[i] == '"'))
-			s[0] = DEFAULT;
-		else if (s[0] == DEFAULT && (wrd[i] == '\'' || wrd[i] == '"'))
-			s[0] = (wrd[i] != '"') * SQUOTE + (wrd[i] == '"') * DQUOTE;
-		if (s[0] != SQUOTE && wrd[i] == '*' && (!i || wrd[i - 1] != '\\'))
-			s[1] = (wrd[i] == '*') * WILD;
-		if (s[0] != SQUOTE && wrd[i] == '$' && (!i || wrd[i - 1] != '\\')
-			&& n[1] != DLESS)
+		if (s[0] != SQUOTE && wrd[i] == '*')
+			s[1] |= WILD;
+		if (s[0] != SQUOTE && wrd[i] == '$' && n[1] != DLESS)
 			interpolate_var(&i, wrd, vars, &data);
 		else
+		{
+			if (is_escaped(&i, wrd, s[0], n[1]))
+				*(data++) = '\\';
+			else if ((s[0] == SQUOTE && wrd[i] == '\'')
+				|| (s[0] == DQUOTE && wrd[i] == '"'))
+				s[0] = DEFAULT;
+			else if (s[0] == DEFAULT && (wrd[i] == '\'' || wrd[i] == '"'))
+				s[0] = (wrd[i] != '"') * SQUOTE + (wrd[i] == '"') * DQUOTE;
 			*(data++) = wrd[i];
+		}
 	}
 	*data = '\0';
 	return (s[1]);

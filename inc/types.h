@@ -14,7 +14,7 @@
 # define TYPES_H
 
 # define MAX_SIZE	1024
-# define MAX_OPTS	1024
+# define MAX_OPTS	4098
 
 enum e_token_types {
 	WORD	= 0x00000,

@@ -25,25 +25,6 @@ static int	n_digit(int num)
 	return (n + 1);
 }
 
-char	*var_value(char *key, t_list *var_list)
-{
-	int		i;
-	t_list	*node;
-
-	node = var_list;
-	while (node)
-	{
-		i = 0;
-		while (((char *)node->content)[i] == *(key + i))
-			i++;
-		if (((char *)node->content)[i] == '=' &&
-			!ft_isalnum(*(key + i)) && *(key + i) != '_')
-			return (&((char *)node->content)[i + 1]);
-		node = node->next;
-	}
-	return (NULL);
-}
-
 int	interpolation_length(int *i, char *str, t_list *var_list)
 {
 	int		count;

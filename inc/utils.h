@@ -1,32 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   utils.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rraharja <rraharja@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/07/19 15:58:08 by rraharja          #+#    #+#             */
-/*   Updated: 2023/07/19 15:58:08 by rraharja         ###   ########.fr       */
+/*   Created: 2023/07/13 03:09:13 by rraharja          #+#    #+#             */
+/*   Updated: 2023/07/13 03:09:13 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "utils.h"
+#ifndef UTILS_H
+# define UTILS_H
 
-char	*var_value(char *key, t_list *var_list)
-{
-	int		i;
-	t_list	*node;
+# include "libft.h"
+# include "types.h"
 
-	node = var_list;
-	while (node)
-	{
-		i = 0;
-		while (((char *)node->content)[i] == *(key + i))
-			i++;
-		if (((char *)node->content)[i] == '=' &&
-			!ft_isalnum(*(key + i)) && *(key + i) != '_')
-			return (&((char *)node->content)[i + 1]);
-		node = node->next;
-	}
-	return (NULL);
-}
+char	*var_value(char *key, t_list *var_list);
+
+#endif
