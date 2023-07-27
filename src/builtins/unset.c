@@ -21,5 +21,5 @@ int	builtin_unset(char **opts, t_list **var_list)
 {
 	while (*(++opts))
 		ft_lstremove_if(var_list, *opts, comp_var, free);
-	exit(0);
+	return (0);
 }

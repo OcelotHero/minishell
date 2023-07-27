@@ -21,6 +21,7 @@
 
 # include <stdio.h>
 # include <fcntl.h>
+# include <signal.h>
 # include <sys/types.h>
 # include <sys/wait.h>
 # include <readline/readline.h>

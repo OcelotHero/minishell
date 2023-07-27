@@ -1,28 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pwd.c                                              :+:      :+:    :+:   */
+/*   signals.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rraharja <rraharja@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/07/09 21:33:49 by rraharja          #+#    #+#             */
-/*   Updated: 2023/07/09 21:33:49 by rraharja         ###   ########.fr       */
+/*   Created: 2023/07/12 01:51:51 by rraharja          #+#    #+#             */
+/*   Updated: 2023/07/12 01:51:51 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "builtins.h"
+#ifndef SIGNALS_H
+# define SIGNALS_H
 
-int	builtin_pwd(char **opts, t_list **var_list)
-{
-	char	buf[BUFSIZ];
-	char	*dir;
+# include <stdio.h>
+# include <signal.h>
+# include <unistd.h>
+# include <readline/readline.h>
 
-	(void) var_list;
-	(void) opts;
-	dir = getcwd(buf, BUFSIZ);
-	if (dir)
-		ft_fprintf(1, "%s\n", dir);
-	else
-		perror("pwd");
-	return (!dir);
-}
+void	setup_signals(void);
+
+#endif

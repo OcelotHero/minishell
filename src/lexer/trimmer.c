@@ -24,7 +24,27 @@ static void	free_token(void *token)
 	free(token);
 }
 
-void	trim_token(t_list **tokens)
+void	trim_tokens(t_list **tokens)
 {
+	t_list	*prev;
+	t_list	*node;
+
+	prev = NULL;
+	node = *tokens;
+	while (node)
+	{
+		if (prev && ((t_token *)prev->content)->type < SPACES
+			&& ((t_token *)node->content)->type == SEMI
+			&& ((t_token *)node->next->content)->type == END)
+		{
+			prev->next = node->next;
+			free_token(node->content);
+			free(node);
+			node = prev->next;
+		}
+		else
+			prev = node;
+		node = node->next;
+	}
 	ft_lstremove_if(tokens, NULL, comp_token, free_token);
 }

@@ -9,3 +9,4 @@
 !*.h
 !Makefile
 !.gitignore
+*_backup.c

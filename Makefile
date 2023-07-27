@@ -3,6 +3,7 @@
 SRC_BIN = cd echo env exit export pwd unset
 SRC_PAR	= ast parser interpreter get_cmd_path get_heredoc
 SRC_LEX = interpolator preprocessor tokenizer postprocessor trimmer
+SRC_SGN = handler
 SRC_UTL = utils
 
 # Mandatory source files
@@ -20,6 +21,7 @@ OBJ_DIR = obj
 BLTIN_D = builtins
 PARSR_D = parser
 LEXER_D = lexer
+SIGNL_D = signals
 UTILS_D = utils
 
 # libft
@@ -36,6 +38,7 @@ FPRNF_L	= $(addprefix $(LIB_DIR)/${FPRNF_D}/lib, $(addsuffix .a, $(FPRNF_N)))
 OBJS	+= $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(SRC_BIN)))
 OBJS	+= $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(SRC_PAR)))
 OBJS	+= $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(SRC_LEX)))
+OBJS	+= $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(SRC_SGN)))
 OBJS	+= $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(SRC_UTL)))
 
 OBJS_M	+= $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(SRC_MAN)))
@@ -50,10 +53,10 @@ OPTS	= -lreadline
 
 VPATH	+= %.c $(SRC_DIR)
 VPATH	+= %.c $(addprefix $(SRC_DIR)/, $(BLTIN_D) $(PARSR_D) $(LEXER_D) \
-				 $(UTILS_D))
+				 $(SIGNL_D) $(UTILS_D))
 
 CC		= cc
-FLAGS	= -g -O0 # -Wall -Wextra -Werror
+FLAGS	= -g -O0 -MD # -Wall -Wextra -Werror
 RM		= rm -rf
 
 all:		BNS = 0

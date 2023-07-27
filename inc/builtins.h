@@ -13,8 +13,9 @@
 #ifndef BUILTINS_H
 # define BUILTINS_H
 
-# include "../lib/libft/inc/libft.h"
+# include "libft.h"
 # include "types.h"
+# include "ft_fprintf.h"
 
 # include <errno.h>
 # include <stdio.h>

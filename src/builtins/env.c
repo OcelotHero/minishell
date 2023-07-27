@@ -18,14 +18,14 @@ int	builtin_env(char **opts, t_list **var_list)
 
 	if (opts[1] != NULL)
 	{
-		printf("env: `%s': No such file or directory\n", opts[1]);
-		exit(1);
+		ft_fprintf(2, "env: `%s': No such file or directory\n", opts[1]);
+		return (1);
 	}
 	node = *var_list;
 	while (node)
 	{
-		printf("%s\n", (char *)node->content);
+		ft_fprintf(1, "%s\n", (char *)node->content);
 		node = node->next;
 	}
-	exit(0);
+	return (0);
 }

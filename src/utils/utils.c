@@ -30,3 +30,11 @@ char	*var_value(char *key, t_list *var_list)
 	}
 	return (NULL);
 }
+
+int	is_builtin(char *cmd)
+{
+	return (!ft_strcmp(cmd, "cd") || !ft_strcmp(cmd, "echo")
+		|| !ft_strcmp(cmd, "env") || !ft_strcmp(cmd, "exit")
+		|| !ft_strcmp(cmd, "export") || !ft_strcmp(cmd, "pwd")
+		|| !ft_strcmp(cmd, "unset"));
+}

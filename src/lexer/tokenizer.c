@@ -61,7 +61,7 @@ t_token	*refine_token(char *str, int *n, char *data, t_list *vars)
 				|| (data[1] == '-' && ft_isalpha(data[2]))))
 			token->type |= OPTS1 + (data[1] == '-') * (OPTS2 - OPTS1);
 		else
-			token->type |= CMD * (n[1] >= SPACES) + ARGS * (n[1] < SPACES);
+			token->type |= CMD * !n[2] + ARGS * n[2];
 	}
 	return (token);
 }
@@ -69,6 +69,7 @@ t_token	*refine_token(char *str, int *n, char *data, t_list *vars)
 int	save_token(t_list **tokens, char *str, int n, t_list *vars)
 {
 	static int	type = SPACES;
+	static int	flag = 0;
 	char		*data;
 	t_list		*node;
 	t_token		*token;
@@ -77,7 +78,7 @@ int	save_token(t_list **tokens, char *str, int n, t_list *vars)
 		* (data_length(str, (int []){n, type}, vars) + 1));
 	if (!data)
 		return (1);
-	token = refine_token(str, (int []){n, type}, data, vars);
+	token = refine_token(str, (int []){n, type, flag}, data, vars);
 	if (!token)
 		return (1);
 	node = ft_lstnew(token);
@@ -89,6 +90,8 @@ int	save_token(t_list **tokens, char *str, int n, t_list *vars)
 	}
 	ft_lstadd_back(tokens, node);
 	type = token_type(str);
+	flag |= token->type == CMD && ft_strlen(data);
+	flag &= !(type & (LPAREN | SEMI | OR | AND | OR_IF | AND_IF | END));
 	return (0);
 }
 
@@ -133,9 +136,9 @@ int	tokenize(t_list **tokens, char *str, t_list *vars)
 			return (1);
 	}
 	if (state != DEFAULT)
-		printf("unexpected EOF while looking for matching `%c'\n",
+		ft_fprintf(2, "unexpected EOF while looking for matching `%c'\n",
 			(state == SQUOTE) * '\'' + (state != SQUOTE) * '"');
 	else if (n[0] <= n[2])
-		printf("unexpected EOF with escaped character\n");
-	return (state != DEFAULT || n[0] == n[2]);
+		ft_fprintf(2, "unexpected EOF with escaped character\n");
+	return (state != DEFAULT || n[0] <= n[2]);
 }

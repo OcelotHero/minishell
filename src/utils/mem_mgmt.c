@@ -1,28 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pwd.c                                              :+:      :+:    :+:   */
+/*   mem_mgmt.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rraharja <rraharja@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/07/09 21:33:49 by rraharja          #+#    #+#             */
-/*   Updated: 2023/07/09 21:33:49 by rraharja         ###   ########.fr       */
+/*   Created: 2023/07/19 15:58:08 by rraharja          #+#    #+#             */
+/*   Updated: 2023/07/19 15:58:08 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "builtins.h"
+#include "utils.h"
 
-int	builtin_pwd(char **opts, t_list **var_list)
+void	*ft_malloc()
 {
-	char	buf[BUFSIZ];
-	char	*dir;
 
-	(void) var_list;
-	(void) opts;
-	dir = getcwd(buf, BUFSIZ);
-	if (dir)
-		ft_fprintf(1, "%s\n", dir);
-	else
-		perror("pwd");
-	return (!dir);
 }

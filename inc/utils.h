@@ -17,5 +17,6 @@
 # include "types.h"
 
 char	*var_value(char *key, t_list *var_list);
+int		is_builtin(char *cmd);
 
 #endif

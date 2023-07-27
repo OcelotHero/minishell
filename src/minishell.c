@@ -12,6 +12,8 @@
 
 #include "lexer.h"
 #include "parser.h"
+#include "signals.h"
+#include "ft_fprintf.h"
 #include <stdbool.h>
 #include <readline/readline.h>
 #include <readline/history.h>
@@ -21,7 +23,7 @@ void	clear(void *content)
 	t_token	*token;
 
 	token = (t_token *)content;
-	// printf("%05x, `%s`\n", token->type, token->data);
+	// printf("%06x, `%s`\n", token->type, token->data);
 	if (token->data)
 		free(token->data);
 	free(content);
@@ -39,64 +41,69 @@ int	main(int narg, char **args, char **envs)
 	var_list = NULL;
 	token_list = NULL;
 	ast = NULL;
-	line = (char *[]){NULL, NULL};
+	line = (char *[]){"", NULL};
+
+
 	while (*envs)
 		ft_lstadd_front(&var_list, ft_lstnew(ft_strdup(*(envs++))));
 
-	// while (true)
-	// {
-	// 	line[0] = readline("$minishell> ");
-	// 	if (ft_strlen(line[0]) && !tokenize(&token_list, line[0], var_list))
-	// 	{
-	// 		if (!line[1] || ft_strcmp(line[0], line[1]))
-	// 			add_history(line[0]);
-	// 		postprocess_tokens(token_list);
-	// 		trim_token(&token_list);
-	// 		// tmp = token_list;
-	// 		// if (((t_token *)tmp->content)->type != END)
-	// 		// {
-	// 		// 	res = expr(&tmp, &ast);
-	// 		// 	if (res == 2 && ((t_token *)tmp->content)->type == END)
-	// 		// 		printf("syntax error near unexpected token `newline'\n");
-	// 		// 	else if (res != 1 && ((t_token *)tmp->content)->type != END)
-	// 		// 		printf("syntax error near unexpected token `%s'\n",
-	// 		// 				((t_token *)tmp->content)->data);
-	// 		// 	else if (ast)
-	// 		// 		interpret_ast(ast, &var_list, res == 0);
-	// 		// 	ast_clear(&ast, NULL);
-	// 		// }
-	// 	}
-	// 	ft_lstclear(&token_list, clear);
-	// 	if (line[1])
-	// 		free(line[1]);
-	// 	line[1] = line[0];
-	// }
-	// ft_lstclear(&var_list, free);
+	while (line[0])
+	{
+		setup_signals();
+		line[0] = readline("$minishell> ");
+		if (line[0] && ft_strlen(line[0]) &&
+			!tokenize(&token_list, line[0], var_list))
+		{
+			if (!line[1] || ft_strcmp(line[0], line[1]))
+				add_history(line[0]);
+			postprocess_tokens(token_list);
+			trim_tokens(&token_list);
+			tmp = token_list;
+			if (((t_token *)tmp->content)->type != END)
+			{
+				res = expr(&tmp, &ast);
+				if (res == 2 && ((t_token *)tmp->content)->type == END)
+					printf("syntax error near unexpected token `newline'\n");
+				else if (res != 1 && ((t_token *)tmp->content)->type != END)
+					printf("syntax error near unexpected token `%s'\n",
+							((t_token *)tmp->content)->data);
+				signal(SIGINT, SIG_IGN);
+				if (ast && res != 1)
+					interpret_ast(ast, &var_list, res == 0);
+				ast_clear(&ast, NULL);
+			}
+		}
+		ft_lstclear(&token_list, clear);
+		if (line[1])
+			free(line[1]);
+		line[1] = line[0];
+	}
+	ft_lstclear(&var_list, free);
 
 	// line[0] = ft_strrchr(args[2], '\n');
 	// line[0][0] = '\0';
 
-	line[0] = args[2];
-	if (ft_strlen(line[0]) && !tokenize(&token_list, line[0], var_list))
-	{
-		postprocess_tokens(token_list);
-		trim_token(&token_list);
-		tmp = token_list;
-		if (((t_token *)tmp->content)->type != END)
-		{
-			res = expr(&tmp, &ast);
-			if (res == 2 && ((t_token *)tmp->content)->type == END)
-				printf("syntax error near unexpected token `newline'\n");
-			else if (res != 1 && ((t_token *)tmp->content)->type != END)
-				printf("syntax error near unexpected token `%s'\n",
-						((t_token *)tmp->content)->data);
-			else if (ast)
-				interpret_ast(ast, &var_list, res == 0);
-			ast_clear(&ast, NULL);
-		}
-	}
-	ft_lstclear(&token_list, clear);
-	ft_lstclear(&var_list, free);
+	// line[0] = args[2];
+	// if (ft_strlen(line[0]) && !tokenize(&token_list, line[0], var_list))
+	// {
+	// 	postprocess_tokens(token_list);
+	// 	trim_tokens(&token_list);
+	// 	tmp = token_list;
+	// 	if (((t_token *)tmp->content)->type != END)
+	// 	{
+	// 		res = expr(&tmp, &ast);
+	// 		if (res == 2 && ((t_token *)tmp->content)->type == END)
+	// 			ft_fprintf(2, "syntax error near unexpected token `newline'\n");
+	// 		else if (res != 1 && ((t_token *)tmp->content)->type != END)
+	// 			ft_fprintf(2, "syntax error near unexpected token `%s'\n",
+	// 					((t_token *)tmp->content)->data);
+	// 		if (ast && res != 1)
+	// 			interpret_ast(ast, &var_list, res == 0);
+	// 		ast_clear(&ast, NULL);
+	// 	}
+	// }
+	// ft_lstclear(&token_list, clear);
+	// ft_lstclear(&var_list, free);
 
 	// int pid;
 	// int fd, cp, p[2];

@@ -32,11 +32,11 @@ int	builtin_echo(char **opts, t_list **var_list)
 				continue ;
 		}
 		if (flag & 2)
-			printf(" ");
+			ft_fprintf(1, " ");
 		flag |= 2;
-		printf("%s", opts[i]);
+		ft_fprintf(1, "%s", opts[i]);
 	}
 	if (!(flag & 1))
-		printf("\n");
-	exit(0);
+		ft_fprintf(1, "\n");
+	return (0);
 }
