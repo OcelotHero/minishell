@@ -23,13 +23,6 @@ void	reset_action(int signo)
 
 void	setup_signals(void)
 {
-	struct sigaction	ign_act;
-	struct sigaction	rst_act;
-
-	sigemptyset(&ign_act.sa_mask);
-	ign_act.sa_handler = SIG_IGN;
-	sigaction(SIGQUIT, &ign_act, NULL);
-	sigemptyset(&rst_act.sa_mask);
-	rst_act.sa_handler = reset_action;
-	sigaction(SIGINT, &rst_act, NULL);
+	signal(SIGQUIT, SIG_IGN);
+	signal(SIGINT, &reset_action);
 }

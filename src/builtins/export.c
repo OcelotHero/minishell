@@ -19,13 +19,13 @@ static int export_new(t_list **var_list, char **arg, int n)
 
 	node = ft_lstnew(NULL);
 	if (!node)
-		return (1);
+		return (-1);
 	if ((*arg)[n] == '+')
 	{
 		(*arg)[n] = '\0';
 		var = ft_strjoin(*arg, &(*arg)[n + 1]);
 		if (!var)
-			return (1);
+			return (-1);
 		(*arg)[n] = '+';
 	}
 	else
@@ -53,7 +53,7 @@ static int	export_var(t_list **var_list, char **arg, int n)
 			if (dif)
 				var = ft_strjoin(node->content, &(*arg)[n + 2]);
 			if (dif && !var)
-				return (1);
+				return (-1);
 			if (!dif)
 				var = *arg;
 			if (!dif)
@@ -86,12 +86,12 @@ int	builtin_export(char **opts, t_list **var_list)
 		if (opts[i][j] && opts[i][j] != '=' && ft_strncmp(&opts[i][j], "+=", 2))
 		{
 			ft_fprintf(2, "export: `%s': not a valid identifier", *opts);
-			exit(1);
+			return (-1);
 		}
 		if (opts[i][j] && export_var(var_list, opts, j))
-			return (1);
+			return (-1);
 	}
 	if (i == 1)
 		return (builtin_env(opts, var_list));
-	exit(0);
+	return (0);
 }

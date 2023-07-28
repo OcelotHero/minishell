@@ -22,8 +22,9 @@
 # include <stdio.h>
 # include <fcntl.h>
 # include <signal.h>
-# include <sys/types.h>
 # include <sys/wait.h>
+# include <sys/types.h>
+# include <readline/history.h>
 # include <readline/readline.h>
 
 void	ast_clear(t_ast **root, void (*del)(t_list *));

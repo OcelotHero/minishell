@@ -36,7 +36,8 @@ static int	process_line(int fd, t_token *token, char *line, t_list *vars)
 {
 	int		i;
 
-	if (!line || !ft_strncmp(line, token->data, ft_strlen(token->data) + 1))
+	if (!line || line[0] == 1
+		|| !ft_strncmp(line, token->data, ft_strlen(token->data) + 1))
 		return (1);
 	i = -1;
 	while (line[++i])
@@ -47,8 +48,7 @@ static int	process_line(int fd, t_token *token, char *line, t_list *vars)
 			expand_var(fd, &i, line, vars);
 		else
 		{
-			if (line[i] == '\\'
-				&& (line[i + 1] == '$' || line[i + 1] == '\\'))
+			if (line[i] == '\\' && (line[i + 1] == '$' || line[i + 1] == '\\'))
 				i++;
 			else if (line[i] == '\\' && !line[i + 1])
 				break ;
@@ -71,8 +71,7 @@ void	int_handler(int signo)
 	errno = signo;
 	write(1, "\n", 1);
 	rl_on_new_line();
-	rl_replace_line(NULL, 0);
-	rl_redisplay();
+	rl_replace_line("\x01", 0);
 	rl_done = 1;
 }
 

@@ -59,6 +59,13 @@ CC		= cc
 FLAGS	= -g -O0 -MD # -Wall -Wextra -Werror
 RM		= rm -rf
 
+OSNAME	= $(shell uname -s)
+
+ifeq (${OSNAME}, Darwin)
+	OPTS	+= -L"/Users/${USER}/homebrew/opt/readline/lib"
+	INCL	+= -I"/Users/$(USER)/homebrew/opt/readline/include"
+endif
+
 all:		BNS = 0
 all:		${NAME_M}
 
