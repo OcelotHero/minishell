@@ -36,7 +36,7 @@ static int	process_line(int fd, t_token *token, char *line, t_list *vars)
 {
 	int		i;
 
-	if (!line || line[0] == 1
+	if (!line || line[0] == 3
 		|| !ft_strncmp(line, token->data, ft_strlen(token->data) + 1))
 		return (1);
 	i = -1;
@@ -68,10 +68,13 @@ int	event(void)
 
 void	int_handler(int signo)
 {
+	char	end;
+
+	end = '\x03';
 	errno = signo;
 	write(1, "\n", 1);
 	rl_on_new_line();
-	rl_replace_line("\x01", 0);
+	rl_replace_line(&end, 0);
 	rl_done = 1;
 }
 
@@ -97,11 +100,12 @@ int	get_heredoc(t_token *token, char *prompt, t_list *vars)
 		stop = process_line(fd, token, line, vars);
 	}
 	close(fd);
+	if (!line && errno)
+		return (unlink(".tmp") || 1);
 	if (!line)
-	{
-		unlink(".tmp");
-		return (1);
-	}
-	free(line);
+		ft_fprintf(2, "minishell: warning: here-document delimited by" \
+			" end-of-file (wanted `%s')", token->data);
+	if (line)
+		free(line);
 	return (0);
 }

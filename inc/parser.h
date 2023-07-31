@@ -27,7 +27,7 @@
 # include <readline/history.h>
 # include <readline/readline.h>
 
-void	ast_clear(t_ast **root, void (*del)(t_list *));
+void	ast_clear(t_ast **root, void (*del)(void *));
 t_ast	*ast_new(t_ast *left, t_list *expr, t_ast *right);
 
 int		consume_token(t_list **token_list, int type);

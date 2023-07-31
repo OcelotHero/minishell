@@ -61,6 +61,7 @@ typedef struct s_ast {
 typedef struct s_cmd {
 	int		pid;
 	int		fd[3];
+	int		child;
 	char	path[MAX_SIZE];
 	char	*opts[MAX_OPTS];
 	t_list	*ior_start;

@@ -12,14 +12,14 @@
 
 #include "parser.h"
 
-void	ast_clear(t_ast **root, void (*del)(t_list *))
+void	ast_clear(t_ast **root, void (*del)(void *))
 {
 	if (!root || !*root)
 		return ;
 	ast_clear(&((*root)->left), del);
 	ast_clear(&((*root)->right), del);
 	if (del)
-		(*del)((*root)->expr);
+		ft_lstclear(&((*root)->expr), del);
 	free(*root);
 	*root = NULL;
 }
