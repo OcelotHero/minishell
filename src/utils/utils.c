@@ -93,5 +93,5 @@ int	error_msg(int error, char *format, ...)
 	va_start(args, format);
 	ft_vdprintf(2, format, args);
 	va_end(args);
-	return (1);
+	return (error != 0);
 }

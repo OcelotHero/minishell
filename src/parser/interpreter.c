@@ -22,7 +22,7 @@ int	setup_file_fds(t_list **node, t_cmd *cmd, int type)
 		| O_TRUNC * (type == GREAT)) + !io * O_RDONLY;
 	if (((t_token *)(*node)->next->content)->type == FILES
 		&& ((t_token *)(*node)->next->next->content)->type == FILES)
-		return (error_msg(2, E_AMBI, ((t_token *)(*node)->content)->data));
+		return (error_msg(1, E_AMBI, ((t_token *)(*node)->content)->data));
 	*node = (*node)->next;
 	if (type == DLESS && (!cmd->fd[io] || close(cmd->fd[io]) || 1))
 		cmd->fd[io] = open(".tmp", flags, 0644);
@@ -118,11 +118,11 @@ int	exec(t_list **vars, t_cmd *cmd)
 	if (cmd->fd[1] && (close(cmd->fd[1]) || 1))
 		cmd->fd[1] = 0;
 	if (!(cmd->path[0]) && cmd->opts[0] && !is_builtin(cmd->opts[0]))
-		return (error_msg(errno, E_CMDE, cmd->opts[0]));
+		return (error_msg(127, E_CMDE, cmd->opts[0]));
 	if (cmd->path[0] && access(cmd->path, X_OK))
-		return (error_msg(errno, E_CMDS, cmd->opts[0], strerror(errno)));
+		return (error_msg(126, E_CMDS, cmd->opts[0], strerror(errno)));
 	if (cmd->path[0] && access(cmd->path, R_OK))
-		return (error_msg(errno, E_CMDS, cmd->opts[0], strerror(errno)));
+		return (error_msg(126, E_CMDS, cmd->opts[0], strerror(errno)));
 	return (execute_cmd(vars, cmd));
 }
 
@@ -168,23 +168,27 @@ int	proto(t_list *node, t_list **vars, t_cmd *cmd, int flags)
 		return (0);
 	if (cmd->fd[2] && (close(cmd->fd[2]) || 1))
 		cmd->fd[2] = 0;
-	waitpid(cmd->pid, &status, 0);
+	if (waitpid(cmd->pid, &status, 0) < 0)
+		return (error_msg(errno, E_WAIT, strerror(errno)));
 	while (cmd->child && cmd->child--)
-		waitpid(-1, NULL, 0);
-	return (status);
+		if (waitpid(-1, NULL, 0) < 0)
+			return (error_msg(errno, E_WAIT, strerror(errno)));
+	return (error_msg(WEXITSTATUS(status) | WTERMSIG(status), ""));
 }
 
 int	evaluate_expr(t_ast *ast, t_list **vars, t_cmd *cmd, int valid)
 {
 	if (((t_token *)ast->expr->content)->type == OR
 		&& ((t_token *)ast->left->expr->content)->type == OR)
-		evaluate_expr(ast->left, vars, cmd, valid);
+		if (evaluate_expr(ast->left, vars, cmd, valid))
+			return (1);
 	if (ast->expr && ((t_token *)ast->expr->content)->type == OR)
 	{
 		if (pipe(cmd->fd))
 			return (error_msg(errno, E_PIPE, strerror(errno)));
 		cmd->child++;
-		proto(ast->left->expr, vars, cmd, valid);
+		if (proto(ast->left->expr, vars, cmd, valid) && !cmd->pid)
+			return (1);
 		ast->expr = NULL;
 		if (ast->right)
 			ast->expr = ast->right->expr;
@@ -200,8 +204,10 @@ int	interpret_ast(t_ast *ast, t_list **vars, t_cmd *cmd, int valid)
 	if (((t_token *)ast->expr->content)->type == OR_IF)
 		return (interpret_ast(ast->left, vars, cmd, valid)
 			&& interpret_ast(ast->right, vars, cmd, valid));
-	evaluate_expr(ast, vars, cmd, valid);
-	if (ast->expr)
-		proto(ast->expr, vars, cmd, 2 | valid);
+	if (evaluate_expr(ast, vars, cmd, valid))
+		return (1);
+	if (cmd->pid && ast->expr)
+		if (proto(ast->expr, vars, cmd, 2 | valid))
+			return (1);
 	return (0);
 }

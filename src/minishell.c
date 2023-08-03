@@ -150,6 +150,7 @@ int	main(int narg, char **args, char **envs)
 		if (line[0] && *line[0] && !semi_syntax_handler(line[0]))
 			process(line[0], &vars);
 		ft_lstclear(&vars, free);
+		return (g_errno);
 	}
 	else
 	{
@@ -175,5 +176,6 @@ int	main(int narg, char **args, char **envs)
 		}
 		free(line[1]);
 		ft_lstclear(&vars, free);
+		return (g_errno);
 	}
 }

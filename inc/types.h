@@ -21,6 +21,7 @@
 # define E_DUP2	"minishell: dup2: %s\n"
 # define E_PIPE	"minishell: pipe: %s\n"
 # define E_FORK	"minishell: fork: %s\n"
+# define E_WAIT	"minishell: wait: %s\n"
 # define E_CMDE	"minishell: %s: command not found\n"
 # define E_CMDS	"minishell: %s: %s\n"
 # define E_AMBI	"minishell: %s: ambiguous redirect\n"
