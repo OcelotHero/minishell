@@ -12,7 +12,7 @@
 
 #include "builtins.h"
 
-static int export_new(t_list **var_list, char **arg, int n)
+static int	export_new(t_list **var_list, char **arg, int n)
 {
 	char	*var;
 	t_list	*node;
@@ -24,14 +24,14 @@ static int export_new(t_list **var_list, char **arg, int n)
 	{
 		(*arg)[n] = '\0';
 		var = ft_strjoin(*arg, &(*arg)[n + 1]);
-		if (!var)
-			return (-1);
 		(*arg)[n] = '+';
 	}
 	else
+		var = ft_strdup(*arg);
+	if (!var)
 	{
-		var = *arg;
-		*arg = NULL;
+		free(node);
+		return (1);
 	}
 	node->content = var;
 	ft_lstadd_front(var_list, node);
@@ -48,16 +48,14 @@ static int	export_var(t_list **var_list, char **arg, int n)
 	while (node)
 	{
 		dif = ft_strncmp(node->content, *arg, n + 1);
-		if (!dif || dif == ('=' - '+'))
+		if ((!dif || dif == ('=' - '+')) && ((char *)node->content)[n] == '=')
 		{
 			if (dif)
 				var = ft_strjoin(node->content, &(*arg)[n + 2]);
-			if (dif && !var)
-				return (-1);
-			if (!dif)
-				var = *arg;
-			if (!dif)
-				*arg = NULL;
+			else
+				var = ft_strdup(*arg);
+			if (!var)
+				return (1);
 			free(node->content);
 			node->content = var;
 			return (0);
@@ -67,31 +65,57 @@ static int	export_var(t_list **var_list, char **arg, int n)
 	return (export_new(var_list, arg, n));
 }
 
+static int	print_env(t_list **var_list)
+{
+	int		i;
+	int		flag;
+	char	*var;
+	t_list	*node;
+
+	node = *var_list;
+	while (node)
+	{
+		i = -1;
+		flag = 0;
+		var = node->content;
+		write(1, "declare -x ", 11);
+		while (var[++i])
+		{
+			if (var[i] == '"' || var[i] == '\\' || var[i] == '$')
+				write(1, "\\", 1);
+			write(1, &var[i], 1);
+			if (!flag && var[i] == '=')
+				write(1, "\"", 1);
+			flag |= var[i] == '=';
+		}
+		write(1, "\"\n", 2);
+		node = node->next;
+	}
+	return (0);
+}
+
 int	builtin_export(char **opts, t_list **var_list)
 {
 	int		i;
 	int		j;
+	int		error;
 	char	*loc;
 
 	i = 0;
+	error = 0;
 	while (opts[++i])
 	{
 		j = 0;
-		if (ft_isalpha(opts[i][j]) || opts[i][j] == '_')
-		{
-			j++;
-			while (opts[i][j] && ft_isalnum(opts[i][j]) && opts[i][j] != '=')
+		error = 0;
+		if ((ft_isalpha(opts[i][j]) || opts[i][j] == '_') && ++j)
+			while (opts[i][j] && opts[i][j] != '='
+				&& (ft_isalnum(opts[i][j]) || opts[i][j] == '_'))
 				j++;
-		}
-		if (opts[i][j] && opts[i][j] != '=' && ft_strncmp(&opts[i][j], "+=", 2))
-		{
-			ft_fprintf(2, "export: `%s': not a valid identifier", *opts);
-			return (-1);
-		}
-		if (opts[i][j] && export_var(var_list, opts, j))
-			return (-1);
+		if (opts[i][j] && opts[i][j] != '=' && ft_strncmp(&opts[i][j], "+=", 2)
+			|| !j)
+			error |= error_msg(1, E_EXPO, opts[i]);
+		if (!error && opts[i][j] && export_var(var_list, &opts[i], j))
+			return (error_msg(errno, E_MLOC, strerror(errno)));
 	}
-	if (i == 1)
-		return (builtin_env(opts, var_list));
-	return (0);
+	return (error || (i == 1 && print_env(var_list)));
 }

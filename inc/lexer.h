@@ -13,19 +13,16 @@
 #ifndef LEXER_H
 # define LEXER_H
 
-# include "libft.h"
-# include "types.h"
 # include "utils.h"
-# include "ft_fprintf.h"
 
 # include <stdio.h>
 # include <errno.h>
 
-int		token_type(char *str);
 t_token	*refine_token(char *str, int *n, char *data, t_list *vars);
+t_list	*update_prev_token(t_list *prev, t_token *token, char **str, int n);
 int		save_token(t_list **tokens, char *str, int n, t_list *vars);
 int		tokenize_line(t_list **tokens, int *n, char *str, t_list *vars);
-int		tokenize(t_list **tokens, char *str,  t_list *vars);
+int		tokenize(t_list **tokens, char *str, t_list *vars);
 
 char	*unquote(char *wrd, int n, int *unquoted);
 int		append_token(t_list **tokens, t_list *node, char *data, int unquoted);

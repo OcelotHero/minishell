@@ -16,17 +16,17 @@
  * Returns the full path to the command invoked, using the path environment
  * variable if available, NULL otherwise
  */
-static void	get_env_cmd_path(char *cmd, char *path, t_list *var_list)
+static void	get_env_cmd_path(char *cmd, char *path, t_list *vars)
 {
 	char	*sep;
 	char	*paths;
 
 	paths = NULL;
-	while (var_list && !paths)
+	while (vars && !paths)
 	{
-		if (!ft_strncmp(var_list->content, "PATH=", 5))
-			paths = ft_strchr(var_list->content, '=') + 1;
-		var_list = var_list->next;
+		if (!ft_strncmp(vars->content, "PATH=", 5))
+			paths = ft_strchr(vars->content, '=') + 1;
+		vars = vars->next;
 	}
 	sep = ":";
 	while (*sep && paths)
@@ -49,7 +49,7 @@ static void	get_env_cmd_path(char *cmd, char *path, t_list *var_list)
  * variable if the command invoked. Returns NULL if the command is not found in
  * the relative path or the path environment.
  */
-void	get_cmd_path(char *cmd, char *path, t_list *var_list)
+void	get_cmd_path(char *cmd, char *path, t_list *vars)
 {
 	int	i;
 
@@ -64,5 +64,5 @@ void	get_cmd_path(char *cmd, char *path, t_list *var_list)
 			ft_memcpy(path, cmd, ft_strlen(cmd) + 1);
 		return ;
 	}
-	get_env_cmd_path(cmd, path, var_list);
+	get_env_cmd_path(cmd, path, vars);
 }

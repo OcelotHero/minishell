@@ -3,7 +3,7 @@
 SRC_PAR	= parse
 SRC_PRN = char nb_base none null percent ptr str
 SRC_UTL = bzero calloc contains isdigit pos_atoi strlen
-SRC_DEF = fprintf
+SRC_DEF = dprintf
 
 # Mandatory source files
 SRC_MAN	= parse_config_m
@@ -27,14 +27,14 @@ BNS_DIR = bonus
 OBJS	+= $(addprefix $(OBJ_DIR)/ft_, $(addsuffix .o, $(SRC_UTL)))
 OBJS	+= $(addprefix $(OBJ_DIR)/ft_, $(addsuffix .o, $(SRC_PAR)))
 OBJS	+= $(addprefix $(OBJ_DIR)/ft_, $(addsuffix .o, $(SRC_DEF)))
-OBJS	+= $(addprefix $(OBJ_DIR)/ft_fprint_, $(addsuffix .o, $(SRC_PRN)))
+OBJS	+= $(addprefix $(OBJ_DIR)/ft_dprint_, $(addsuffix .o, $(SRC_PRN)))
 
 OBJS_M	+= $(addprefix $(OBJ_DIR)/ft_, $(addsuffix .o, $(SRC_MAN)))
 
 OBJS_B	+= $(addprefix $(OBJ_DIR)/ft_, $(addsuffix .o, $(SRC_BNS)))
 
 ##############################  Config declarations  #################################
-NAME	= libftfprintf.a
+NAME	= libftdprintf.a
 INCL	= inc
 
 VPATH	+= %.c $(SRC_DIR)

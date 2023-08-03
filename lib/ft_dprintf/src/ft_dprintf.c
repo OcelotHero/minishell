@@ -10,9 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_fprintf.h"
+#include "ft_dprintf.h"
 
-int	ft_fprintf(int fd, const char *format, ...)
+int	ft_dprintf(int fd, const char *format, ...)
 {
 	int		i;
 	int		total;
@@ -30,5 +30,23 @@ int	ft_fprintf(int fd, const char *format, ...)
 		total += ft_parse(fd, &format, args);
 	}
 	va_end(args);
+	return (total);
+}
+
+int	ft_vdprintf(int fd, const char *format, va_list args)
+{
+	int		i;
+	int		total;
+
+	total = 0;
+	while (format && *format)
+	{
+		i = 0;
+		while (format[i] && format[i] != '%')
+			write(fd, &format[i++], 1);
+		total += i;
+		format += i;
+		total += ft_parse(fd, &format, args);
+	}
 	return (total);
 }

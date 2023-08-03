@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_print_ptr.c                                     :+:      :+:    :+:   */
+/*   ft_dprint_ptr.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,13 +10,13 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_fprintf.h"
+#include "ft_dprintf.h"
 
-size_t	ft_fprint_ptr(int fd, unsigned long long ptr, t_pconfig *config)
+size_t	ft_dprint_ptr(int fd, unsigned long long ptr, t_pconfig *config)
 {
 	if (ptr == 0)
-		return (ft_fprint_null(fd, config, 1));
+		return (ft_dprint_null(fd, config, 1));
 	config->form = 1;
 	config->conv = 'x';
-	return (ft_fprint_nb_base(fd, ptr, config));
+	return (ft_dprint_nb_base(fd, ptr, config));
 }

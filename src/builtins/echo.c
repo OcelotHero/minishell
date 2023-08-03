@@ -20,11 +20,11 @@ int	builtin_echo(char **opts, t_list **var_list)
 
 	(void) var_list;
 	i = 0;
-	j = 0;
 	flag = 0;
 	while (opts[++i])
 	{
-		if (i == 1 && opts[i][j++] == '-')
+		j = 0;
+		if (opts[i][j++] == '-' && !(flag & 2))
 		{
 			while (opts[i][j++] == 'n')
 				flag = opts[i][j] == '\0';
@@ -32,11 +32,11 @@ int	builtin_echo(char **opts, t_list **var_list)
 				continue ;
 		}
 		if (flag & 2)
-			ft_fprintf(1, " ");
+			ft_dprintf(1, " ");
 		flag |= 2;
-		ft_fprintf(1, "%s", opts[i]);
+		ft_dprintf(1, "%s", opts[i]);
 	}
 	if (!(flag & 1))
-		ft_fprintf(1, "\n");
+		ft_dprintf(1, "\n");
 	return (0);
 }

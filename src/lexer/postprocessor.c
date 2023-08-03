@@ -120,19 +120,22 @@ int	postprocess_tokens(t_list *tokens)
 
 	while (tokens)
 	{
-		s = ((t_token *)tokens->content)->data;
-		n = (int []){-1, 0, ft_strlen(s), DEFAULT};
-		while (++(n[0]) <= n[2])
+		if (((t_token *)tokens->content)->type < SPACES)
 		{
-			if (n[3] != SQUOTE && s[n[0]] == '\\')
-				(n[0])++;
-			else if ((s[n[0]] == '\'' && n[3] == SQUOTE)
-				|| (s[n[0]] == '"' && n[3] == DQUOTE))
-				n[3] = DEFAULT;
-			else if ((s[n[0]] == '\'' || s[n[0]] == '"') && n[3] == DEFAULT)
-				n[3] = (s[n[0]] != '"') * SQUOTE + (s[n[0]] == '"') * DQUOTE;
-			else if (n[3] == DEFAULT && postprocess(&tokens, n, s))
-				return (1);
+			s = ((t_token *)tokens->content)->data;
+			n = (int []){-1, 0, ft_strlen(s), DEFAULT};
+			while (++(*n) <= n[2])
+			{
+				if (n[3] != SQUOTE && s[*n] == '\\')
+					(*n)++;
+				else if ((s[*n] == '\'' && n[3] == SQUOTE)
+					|| (s[*n] == '"' && n[3] == DQUOTE))
+					n[3] = DEFAULT;
+				else if ((s[*n] == '\'' || s[*n] == '"') && n[3] == DEFAULT)
+					n[3] = (s[*n] != '"') * SQUOTE + (s[*n] == '"') * DQUOTE;
+				else if (n[3] == DEFAULT && postprocess(&tokens, n, s))
+					return (1);
+			}
 		}
 		tokens = tokens->next;
 	}

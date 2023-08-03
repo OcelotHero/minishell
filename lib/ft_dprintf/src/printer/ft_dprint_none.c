@@ -1,30 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_print_char.c                                    :+:      :+:    :+:   */
+/*   ft_dprint_none.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/10/23 15:07:43 by rraharja          #+#    #+#             */
-/*   Updated: 2022/10/23 15:27:09 by rraharja         ###   ########.fr       */
+/*   Created: 2022/10/23 15:07:18 by rraharja          #+#    #+#             */
+/*   Updated: 2022/10/23 15:27:14 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_fprintf.h"
+#include "ft_dprintf.h"
 
-size_t	ft_fprint_char(int fd, const char c, t_pconfig *config)
+size_t	ft_dprint_none(int fd, t_pconfig *config, const char **format,
+	char *start)
 {
-	int	len;
-
-	len = 0;
-	if (config->width < 0)
-		config->width = 1;
-	if (config->padding == '-')
-		write(fd, &c, 1);
-	while (++len < config->width)
-		write(fd, " ", 1);
-	if (config->padding != '-')
-		write(fd, &c, 1);
-	free(config);
-	return (len);
+	*format = start + 1;
+	return (ft_dprint_percent(fd, config));
 }

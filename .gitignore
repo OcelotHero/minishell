@@ -10,3 +10,4 @@
 !Makefile
 !.gitignore
 *_backup.c
+test*.c

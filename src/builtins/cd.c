@@ -22,8 +22,8 @@ int	builtin_cd(char **opts, t_list **var_list)
 		i++;
 	if (i != 2)
 	{
-		ft_fprintf(2, "cd: too many arguments\n");
-		return (-1);
+		ft_dprintf(2, "cd: too many arguments\n");
+		return (1);
 	}
 	return (chdir(opts[1]));
 }

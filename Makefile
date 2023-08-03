@@ -29,9 +29,9 @@ LIBFT_D = libft
 LIBFT_N = ft
 LIBFT_L	= $(addprefix $(LIB_DIR)/${LIBFT_D}/lib, $(addsuffix .a, $(LIBFT_N)))
 
-# ft_fprintf
-FPRNF_D = ft_fprintf
-FPRNF_N = ftfprintf
+# ft_dprintf
+FPRNF_D = ft_dprintf
+FPRNF_N = ftdprintf
 FPRNF_L	= $(addprefix $(LIB_DIR)/${FPRNF_D}/lib, $(addsuffix .a, $(FPRNF_N)))
 
 ##############################        Objects        ################################

@@ -13,12 +13,11 @@
 #ifndef BUILTINS_H
 # define BUILTINS_H
 
-# include "libft.h"
-# include "types.h"
-# include "ft_fprintf.h"
+# include "utils.h"
 
 # include <errno.h>
 # include <stdio.h>
+# include <string.h>
 # include <unistd.h>
 
 int	builtin_cd(char **opts, t_list **var_list);

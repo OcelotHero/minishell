@@ -40,7 +40,7 @@ int	interpolation_length(int *i, char *str, t_list *var_list)
 	if (!val)
 		return (0);
 	count = 0;
-	while(*val)
+	while (*val)
 	{
 		count += 1 + (*val == '\'' || *val == '"' || *val == '\\');
 		val++;
@@ -57,7 +57,7 @@ void	interpolation_value(int *i, char *str, t_list *var_list, char **data)
 		(*i)++;
 	if (!val)
 		return ;
-	while(*val)
+	while (*val)
 	{
 		if (*val == '\'' || *val == '"')
 			*((*data)++) = '\\';

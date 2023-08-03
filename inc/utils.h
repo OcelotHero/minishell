@@ -15,8 +15,12 @@
 
 # include "libft.h"
 # include "types.h"
+# include "ft_dprintf.h"
 
 char	*var_value(char *key, t_list *var_list);
+int		token_type(char *str);
+char	*token_str(int type);
 int		is_builtin(char *cmd);
+int		error_msg(int error, char *format, ...);
 
 #endif

@@ -16,13 +16,11 @@ static int	is_escaped(int *i, char *wrd, int state, int type)
 {
 	int	res;
 
-	res = ((wrd[*i] == '\\' && wrd[*i + 1] != '\\' && state == DQUOTE)
-			|| (wrd[*i] == '\'' && state == DQUOTE)
-			|| ((wrd[*i] == '"' || wrd[*i] == '\\') && state == SQUOTE)
-			|| (wrd[*i] == '\\' && wrd[*i + 1] == '$' && state == DEFAULT));
-	*i += ((state == DQUOTE && wrd[*i] == '\\'
-				&& (wrd[*i + 1] == '"' || wrd[*i + 1] == '$'))
-			|| (state == DEFAULT && wrd[*i] == '\\' && wrd[*i + 1] == '$'));
+	res = (wrd[*i] == '\\' || (wrd[*i] == '\'' && state == DQUOTE)
+			|| (wrd[*i] == '"' && state == SQUOTE));
+	*i += ((((wrd[*i + 1] == '"' || wrd[*i + 1] == '\\' || wrd[*i + 1] == '$')
+					&& state == DQUOTE)
+				|| state == DEFAULT) && wrd[*i] == '\\');
 	return (res);
 }
 

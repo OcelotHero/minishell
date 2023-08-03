@@ -12,31 +12,6 @@
 
 #include "lexer.h"
 
-int	token_type(char *str)
-{
-	// if ((*str == '\t' || *str == ' '))
-	// 	return (SPACES);
-	if ((*str == '\t' || *str == '\n' || *str == ' '))
-		return (SPACES);
-	if (*str == '(')
-		return (LPAREN);
-	if (*str == ')')
-		return (RPAREN);
-	if (*str == ';')
-		return (SEMI);
-	if (*str == '<')
-		return (LESS + (*(str + 1) == '<') * (DLESS - LESS));
-	if (*str == '>')
-		return (GREAT + (*(str + 1) == '>') * (DGREAT - GREAT));
-	if (*str == '|')
-		return (OR + (*(str + 1) == '|') * (OR_IF - OR));
-	if (*str == '&')
-		return (AND + (*(str + 1) == '&') * (AND_IF - AND));
-	if (*str == '\0')
-		return (END);
-	return (WORD);
-}
-
 t_token	*refine_token(char *str, int *n, char *data, t_list *vars)
 {
 	t_token	*token;
@@ -66,32 +41,57 @@ t_token	*refine_token(char *str, int *n, char *data, t_list *vars)
 	return (token);
 }
 
+t_list	*update_prev_token(t_list *prev, t_token *token, char **strs, int n)
+{
+	char	*data;
+	t_list	*node;
+
+	if (prev && ((t_token *)prev->content)->type & (LESS | GREAT | DGREAT))
+	{
+		data = ft_strndup(strs[1], n);
+		if (!data)
+		{
+			free(strs[0]);
+			free(token);
+			return (NULL);
+		}
+		free(((t_token *)prev->content)->data);
+		((t_token *)prev->content)->data = data;
+	}
+	node = ft_lstnew(token);
+	if (!node)
+	{
+		free(strs[0]);
+		free(token);
+		return (NULL);
+	}
+	return (node);
+}
+
 int	save_token(t_list **tokens, char *str, int n, t_list *vars)
 {
-	static int	type = SPACES;
-	static int	flag = 0;
-	char		*data;
-	t_list		*node;
-	t_token		*token;
+	static int		type = SPACES;
+	static int		flag = 0;
+	static t_list	*node = NULL;
+	char			*data;
+	t_token			*token;
 
 	data = malloc(sizeof(*data)
-		* (data_length(str, (int []){n, type}, vars) + 1));
+			* (data_length(str, (int []){n, type}, vars) + 1));
 	if (!data)
 		return (1);
 	token = refine_token(str, (int []){n, type, flag}, data, vars);
 	if (!token)
 		return (1);
-	node = ft_lstnew(token);
+	node = update_prev_token(node, token, (char *[]){data, str}, n);
 	if (!node)
-	{
-		free(data);
-		free(token);
 		return (1);
-	}
 	ft_lstadd_back(tokens, node);
 	type = token_type(str);
-	flag |= token->type == CMD && ft_strlen(data);
+	flag |= (token->type == CMD && ft_strlen(data));
 	flag &= !(type & (LPAREN | SEMI | OR | AND | OR_IF | AND_IF | END));
+	if (type == END)
+		node = NULL;
 	return (0);
 }
 
@@ -136,9 +136,9 @@ int	tokenize(t_list **tokens, char *str, t_list *vars)
 			return (1);
 	}
 	if (state != DEFAULT)
-		ft_fprintf(2, "unexpected EOF while looking for matching `%c'\n",
-			(state == SQUOTE) * '\'' + (state != SQUOTE) * '"');
+		ft_dprintf(2, "minishell: unexpected EOF while looking for matching"\
+			" `%c'\n", (state == SQUOTE) * '\'' + (state != SQUOTE) * '"');
 	else if (n[0] <= n[2])
-		ft_fprintf(2, "unexpected EOF with escaped character\n");
-	return (state != DEFAULT || n[0] <= n[2]);
+		ft_dprintf(2, "minishell: unexpected EOF with escaped character\n");
+	return ((state != DEFAULT || n[0] <= n[2]) << 1);
 }

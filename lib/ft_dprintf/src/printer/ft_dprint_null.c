@@ -1,20 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_contains.c                                      :+:      :+:    :+:   */
+/*   ft_dprint_null.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/10/23 14:58:08 by rraharja          #+#    #+#             */
-/*   Updated: 2022/10/23 15:27:45 by rraharja         ###   ########.fr       */
+/*   Created: 2022/10/23 15:06:33 by rraharja          #+#    #+#             */
+/*   Updated: 2022/10/24 20:25:35 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_fprintf.h"
+#include "ft_dprintf.h"
 
-bool	ft_contains(const char *s, char c)
+size_t	ft_dprint_null(int fd, t_pconfig *config, bool is_ptr)
 {
-	while (*s && *s != c)
-		s++;
-	return (*s == c);
+	if (is_ptr)
+		return (ft_dprint_str(fd, "0x0", ' ', config));
+	return (ft_dprint_str(fd, "(null)", ' ', config));
 }

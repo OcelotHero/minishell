@@ -1,28 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pwd.c                                              :+:      :+:    :+:   */
+/*   ft_bzero.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rraharja <rraharja@student.42heilbronn.de> +#+  +:+       +#+        */
+/*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/07/09 21:33:49 by rraharja          #+#    #+#             */
-/*   Updated: 2023/07/09 21:33:49 by rraharja         ###   ########.fr       */
+/*   Created: 2022/10/12 07:41:35 by rraharja          #+#    #+#             */
+/*   Updated: 2022/10/12 07:48:13 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "builtins.h"
+#include "ft_dprintf.h"
 
-int	builtin_pwd(char **opts, t_list **var_list)
+void	ft_bzero(void *s, size_t n)
 {
-	char	buf[BUFSIZ];
-	char	*dir;
-
-	(void) var_list;
-	(void) opts;
-	dir = getcwd(buf, BUFSIZ);
-	if (dir)
-		ft_dprintf(1, "%s\n", dir);
-	else
-		perror("pwd");
-	return (!dir);
+	while (n--)
+		((unsigned char *) s)[n] = 0;
 }

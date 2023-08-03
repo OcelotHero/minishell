@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_fprintf.h"
+#include "ft_dprintf.h"
 
 size_t	ft_parse(int fd, const char **format, va_list args)
 {
@@ -24,17 +24,17 @@ size_t	ft_parse(int fd, const char **format, va_list args)
 	if (!config)
 		return (0);
 	if (!ft_contains(CONVERSION, config->conv))
-		return (ft_fprint_none(fd, config, format, start));
+		return (ft_dprint_none(fd, config, format, start));
 	(*format)++;
 	if (config->conv == '%')
-		return (ft_fprint_percent(fd, config));
+		return (ft_dprint_percent(fd, config));
 	if (config->conv == 'c')
-		return (ft_fprint_char(fd, va_arg(args, int), config));
+		return (ft_dprint_char(fd, va_arg(args, int), config));
 	if (config->conv == 's')
-		return (ft_fprint_str(fd, va_arg(args, char *), ' ', config));
+		return (ft_dprint_str(fd, va_arg(args, char *), ' ', config));
 	if (config->conv == 'd' || config->conv == 'i')
-		return (ft_fprint_nb_base(fd, va_arg(args, int), config));
+		return (ft_dprint_nb_base(fd, va_arg(args, int), config));
 	if (config->conv == 'p')
-		return (ft_fprint_ptr(fd, va_arg(args, unsigned long long), config));
-	return (ft_fprint_nb_base(fd, va_arg(args, unsigned int), config));
+		return (ft_dprint_ptr(fd, va_arg(args, unsigned long long), config));
+	return (ft_dprint_nb_base(fd, va_arg(args, unsigned int), config));
 }

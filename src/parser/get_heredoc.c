@@ -21,14 +21,14 @@ static void	expand_var(int fd, int *i, char *str, t_list *vars)
 	else if (ft_isdigit(str[*i + 1]))
 		(*i)++;
 	else if (str[*i + 1] == '?' && ++(*i))
-		ft_fprintf(fd, "%d", errno);
+		ft_dprintf(fd, "%d", errno);
 	else
 	{
 		val = var_value(&str[*i + 1], vars);
 		while (ft_isalnum(str[*i + 1]) || str[*i + 1] == '_')
 			(*i)++;
 		if (val)
-			ft_fprintf(fd, "%s", val);
+			ft_dprintf(fd, "%s", val);
 	}
 }
 
@@ -75,6 +75,7 @@ void	int_handler(int signo)
 	write(1, "\n", 1);
 	rl_on_new_line();
 	rl_replace_line(&end, 0);
+	rl_redisplay();
 	rl_done = 1;
 }
 
@@ -85,26 +86,25 @@ void	int_handler(int signo)
 int	get_heredoc(t_token *token, char *prompt, t_list *vars)
 {
 	int		fd;
-	int		stop;
 	char	*line;
 
 	rl_event_hook = event;
 	signal(SIGINT, int_handler);
 	fd = open(".tmp", O_WRONLY | O_CREAT | O_APPEND, 0644);
 	if (fd < 0)
-		return (1);
-	stop = 0;
-	while (!stop)
+		return (error_msg(errno, E_FILE, ".tmp", strerror(errno)));
+	while (1)
 	{
 		line = readline(prompt);
-		stop = process_line(fd, token, line, vars);
+		if (process_line(fd, token, line, vars))
+			break ;
 	}
 	close(fd);
 	if (!line && errno)
-		return (unlink(".tmp") || 1);
+		return (error_msg(errno, E_MLOC, strerror(errno))
+			&& (unlink(".tmp") || 1));
 	if (!line)
-		ft_fprintf(2, "minishell: warning: here-document delimited by" \
-			" end-of-file (wanted `%s')", token->data);
+		ft_dprintf(2, E_EOFW, token->data);
 	if (line)
 		free(line);
 	return (0);

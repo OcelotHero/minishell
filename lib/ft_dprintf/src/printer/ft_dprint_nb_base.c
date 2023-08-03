@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_print_nb_base.c                                 :+:      :+:    :+:   */
+/*   ft_dprint_nb_base.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_fprintf.h"
+#include "ft_dprintf.h"
 
 static size_t	ft_get_dest_length(long long n, t_pconfig *config)
 {
@@ -88,7 +88,7 @@ static char	*ft_itoa_base(long long n, t_pconfig *config)
 	return (result);
 }
 
-size_t	ft_fprint_nb_base(int fd, long long n, t_pconfig *config)
+size_t	ft_dprint_nb_base(int fd, long long n, t_pconfig *config)
 {
 	int		len;
 	char	*str;
@@ -103,7 +103,7 @@ size_t	ft_fprint_nb_base(int fd, long long n, t_pconfig *config)
 		return (0);
 	}
 	padding = (config->padding == '0') * '0' + (config->padding != '0') * ' ';
-	len = ft_fprint_str(fd, str, padding, config);
+	len = ft_dprint_str(fd, str, padding, config);
 	free(str);
 	return (len);
 }

@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_print_str.c                                     :+:      :+:    :+:   */
+/*   ft_dprint_str.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,15 +10,15 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_fprintf.h"
+#include "ft_dprintf.h"
 
-size_t	ft_fprint_str(int fd, const char *str, char padding, t_pconfig *config)
+size_t	ft_dprint_str(int fd, const char *str, char padding, t_pconfig *config)
 {
 	int	len;
 
 	len = -1;
 	if (!str)
-		return (ft_fprint_null(fd, config, 0));
+		return (ft_dprint_null(fd, config, 0));
 	if (config->precision == -1 || config->precision > (int) ft_strlen(str))
 		config->precision = ft_strlen(str);
 	if (config->width < config->precision)

@@ -16,6 +16,21 @@
 # define MAX_SIZE	1024
 # define MAX_OPTS	4098
 
+# define E_MLOC "minishell: malloc: %s\n"
+# define E_DUPE	"minishell: dup: %s\n"
+# define E_DUP2	"minishell: dup2: %s\n"
+# define E_PIPE	"minishell: pipe: %s\n"
+# define E_FORK	"minishell: fork: %s\n"
+# define E_CMDE	"minishell: %s: command not found\n"
+# define E_CMDS	"minishell: %s: %s\n"
+# define E_AMBI	"minishell: %s: ambiguous redirect\n"
+# define E_FILE	"minishell: %s: %s\n"
+# define E_EOFW	"minishell: warning: here-document delimited by end-of-file \
+(wanted `%s')\n"
+# define E_EXPO	"minishell: export: `%s': not a valid identifier\n"
+
+extern int	g_errno;
+
 enum e_token_types {
 	WORD	= 0x000000,
 	CMD		= 0x000001,

@@ -1,27 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_pos_atoi.c                                      :+:      :+:    :+:   */
+/*   ft_parse_config.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/10/23 14:59:16 by rraharja          #+#    #+#             */
-/*   Updated: 2022/10/23 15:26:53 by rraharja         ###   ########.fr       */
+/*   Created: 2022/10/23 15:01:38 by rraharja          #+#    #+#             */
+/*   Updated: 2022/10/23 15:45:40 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_fprintf.h"
+#include "ft_dprintf.h"
 
-size_t	ft_pos_atoi(const char **str)
+t_pconfig	*ft_parse_config(const char **format)
 {
-	size_t	total;
+	t_pconfig	*config;
 
-	total = 0;
-	while (**str >= '0' && **str <= '9')
-	{
-		total *= 10;
-		total += **str - '0';
-		(*str)++;
-	}
-	return (total);
+	config = ft_calloc(sizeof(*config), 1);
+	if (!config)
+		return (NULL);
+	config->width = -1;
+	config->precision = -1;
+	config->conv = *(++*format);
+	return (config);
 }

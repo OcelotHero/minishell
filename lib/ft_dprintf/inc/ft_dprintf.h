@@ -38,14 +38,14 @@ size_t		ft_parse(int fd, const char **format, va_list args);
 t_pconfig	*ft_parse_config(const char **format);
 
 /*------ Printer functions ------*/
-size_t		ft_fprint_percent(int fd, t_pconfig *config);
-size_t		ft_fprint_null(int fd, t_pconfig *config, bool is_ptr);
-size_t		ft_fprint_char(int fd, const char c, t_pconfig *config);
-size_t		ft_fprint_nb_base(int fd, long long n, t_pconfig *config);
-size_t		ft_fprint_ptr(int fd, unsigned long long ptr, t_pconfig *config);
-size_t		ft_fprint_str(int fd, const char *str, char padding,
+size_t		ft_dprint_percent(int fd, t_pconfig *config);
+size_t		ft_dprint_null(int fd, t_pconfig *config, bool is_ptr);
+size_t		ft_dprint_char(int fd, const char c, t_pconfig *config);
+size_t		ft_dprint_nb_base(int fd, long long n, t_pconfig *config);
+size_t		ft_dprint_ptr(int fd, unsigned long long ptr, t_pconfig *config);
+size_t		ft_dprint_str(int fd, const char *str, char padding,
 				t_pconfig *config);
-size_t		ft_fprint_none(int fd, t_pconfig *config, const char **format,
+size_t		ft_dprint_none(int fd, t_pconfig *config, const char **format,
 				char *start);
 
 /*------ Utils functions ------*/
@@ -57,6 +57,7 @@ size_t		ft_strlen(const char *s);
 size_t		ft_pos_atoi(const char **str);
 
 /*------ ft_printf function ------*/
-int			ft_fprintf(int fd, const char *format, ...);
+int			ft_dprintf(int fd, const char *format, ...);
+int			ft_vdprintf(int fd, const char *format, va_list args);
 
 #endif
