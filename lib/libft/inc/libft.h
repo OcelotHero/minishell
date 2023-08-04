@@ -40,6 +40,7 @@ void	*ft_memmove(void *dst, const void *src, size_t len);
 
 // String operations
 int		ft_strcmp(const char *s1, const char *s2);
+int		ft_strcmp_ign(const char *s1, const char *s2);
 int		ft_strncmp(const char *s1, const char *s2, size_t n);
 char	*ft_strdup(const char *s1);
 char	*ft_strndup(const char *s1, size_t n);

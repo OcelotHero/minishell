@@ -79,9 +79,9 @@ char	*token_str(int type)
 
 int	is_builtin(char *cmd)
 {
-	return (cmd && (!ft_strcmp(cmd, "cd") || !ft_strcmp(cmd, "echo")
-			|| !ft_strcmp(cmd, "env") || !ft_strcmp(cmd, "exit")
-			|| !ft_strcmp(cmd, "export") || !ft_strcmp(cmd, "pwd")
+	return (cmd && (!ft_strcmp_ign(cmd, "cd") || !ft_strcmp_ign(cmd, "echo")
+			|| !ft_strcmp_ign(cmd, "env") || !ft_strcmp(cmd, "exit")
+			|| !ft_strcmp(cmd, "export") || !ft_strcmp_ign(cmd, "pwd")
 			|| !ft_strcmp(cmd, "unset")));
 }
 

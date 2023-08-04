@@ -2,7 +2,7 @@
 # Mandatory source files
 SRC_ELE = atoi bzero calloc isalnum isalpha isascii isdigit isprint memchr memcmp \
 		  memcpy memmove memset strchr strdup strndup strlcat strlcpy strlen strcmp \
-		  strncmp strnstr strrchr tolower toupper swap
+		  strncmp strncmp_ign strnstr strrchr tolower toupper swap
 SRC_SUP = itoa putchar_fd putendl_fd putnbr_fd putstr_fd split striteri strjoin \
 		  strmapi strtrim substr
 

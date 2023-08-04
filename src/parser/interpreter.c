@@ -67,7 +67,7 @@ int	parse_expr(t_list *node, t_list **vars, t_cmd *cmd, int valid)
 	{
 		if (((t_token *)node->content)->type & (CMD | OPTS1 | OPTS2 | ARGS))
 			cmd->opts[i++] = ((t_token *)node->content)->data;
-		if (((t_token *)node->content)->type & CMD)
+		if (!(((t_token *)node->content)->type & BUILTIN))
 			get_cmd_path(cmd->opts[0], cmd->path, *vars);
 		if (((t_token *)node->content)->type == DLESS)
 			error = get_heredoc(node->next->content, "> ", *vars);
@@ -86,17 +86,17 @@ int	execute_cmd(t_list **vars, t_cmd *cmd)
 {
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
-	if (cmd->opts[0] && !ft_strcmp(cmd->opts[0], "cd"))
+	if (cmd->opts[0] && !ft_strcmp_ign(cmd->opts[0], "cd"))
 		return (builtin_cd(cmd->opts, vars));
-	if (cmd->opts[0] && !ft_strcmp(cmd->opts[0], "echo"))
+	if (cmd->opts[0] && !ft_strcmp_ign(cmd->opts[0], "echo"))
 		return (builtin_echo(cmd->opts, vars));
-	if (cmd->opts[0] && !ft_strcmp(cmd->opts[0], "env"))
+	if (cmd->opts[0] && !ft_strcmp_ign(cmd->opts[0], "env"))
 		return (builtin_env(cmd->opts, vars));
 	if (cmd->opts[0] && !ft_strcmp(cmd->opts[0], "exit"))
 		return (builtin_exit(cmd->opts, vars));
 	if (cmd->opts[0] && !ft_strcmp(cmd->opts[0], "export"))
 		return (builtin_export(cmd->opts, vars));
-	if (cmd->opts[0] && !ft_strcmp(cmd->opts[0], "pwd"))
+	if (cmd->opts[0] && !ft_strcmp_ign(cmd->opts[0], "pwd"))
 		return (builtin_pwd(cmd->opts, vars));
 	if (cmd->opts[0] && !ft_strcmp(cmd->opts[0], "unset"))
 		return (builtin_unset(cmd->opts, vars));

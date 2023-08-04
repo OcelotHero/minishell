@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_heredoc.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: snagulap <snagulap@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/17 18:28:32 by rraharja          #+#    #+#             */
-/*   Updated: 2023/07/18 16:05:37 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/08/04 14:47:21 by snagulap         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,32 +32,32 @@ static void	expand_var(int fd, int *i, char *str, t_list *vars)
 	}
 }
 
-static int	process_line(int fd, t_token *token, char *line, t_list *vars)
+static int	process_line(int fd, t_token *token, char *ln, t_list *vars)
 {
 	int		i;
 
-	if (!line || line[0] == 3
-		|| !ft_strncmp(line, token->data, ft_strlen(token->data) + 1))
+	if (!ln || ln[0] == 3
+		|| !ft_strncmp(ln, token->data, ft_strlen(token->data) + 1))
 		return (1);
 	i = -1;
-	while (line[++i])
+	while (ln[++i])
 	{
 		if (token->type & QUOT)
-			write(fd, &line[i], 1);
-		else if (line[i] == '$')
-			expand_var(fd, &i, line, vars);
+			write(fd, &ln[i], 1);
+		else if (ln[i] == '$')
+			expand_var(fd, &i, ln, vars);
 		else
 		{
-			if (line[i] == '\\' && (line[i + 1] == '$' || line[i + 1] == '\\'))
+			if ((ln[i] == '\\') && (ln[i + 1] == '$' || ln[i + 1] == '\\'))
 				i++;
-			else if (line[i] == '\\' && !line[i + 1])
+			else if (ln[i] == '\\' && !ln[i + 1])
 				break ;
-			write(fd, &line[i], 1);
+			write(fd, &ln[i], 1);
 		}
 	}
-	if (!line[i])
+	if (!ln[i])
 		write(fd, "\n", 1);
-	free(line);
+	free(ln);
 	return (0);
 }
 
@@ -86,7 +86,7 @@ void	int_handler(int signo)
 int	get_heredoc(t_token *token, char *prompt, t_list *vars)
 {
 	int		fd;
-	char	*line;
+	char	*ln;
 
 	errno = 0;
 	rl_event_hook = event;
@@ -96,17 +96,17 @@ int	get_heredoc(t_token *token, char *prompt, t_list *vars)
 		return (error_msg(errno, E_FILE, ".tmp", strerror(errno)));
 	while (1)
 	{
-		line = readline(prompt);
-		if (process_line(fd, token, line, vars))
+		ln = readline(prompt);
+		if (process_line(fd, token, ln, vars))
 			break ;
 	}
 	close(fd);
-	if (!line && errno)
+	if (!ln && errno)
 		return (error_msg(errno, E_MLOC, strerror(errno))
 			&& (unlink(".tmp") || 1));
-	if (!line)
+	if (!ln)
 		ft_dprintf(2, E_EOFW, token->data);
-	if (line)
-		free(line);
+	if (ln)
+		free(ln);
 	return (0);
 }
