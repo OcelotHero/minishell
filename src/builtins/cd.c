@@ -19,8 +19,11 @@ int	builtin_cd(char **opts, t_list **var_list)
 
 	if (opts[2])
 		return (error_msg(1, E_CDAG));
-	if (chdir(opts[1]))
-		return (error_msg(errno, E_CHDR, strerror(errno), opts[1]));
+	if (opts[1] && chdir(opts[1]))
+		return (error_msg(1, E_CHDR, opts[1], strerror(errno)));
+	if (!opts[1] && chdir(var_value("HOME", *var_list)))
+		return (error_msg(1, E_CHDR, var_value("HOME", *var_list),
+			strerror(errno)));
 	pwd[0] = ft_strjoin("OLDPWD=", var_value("PWD", *var_list));
 	pwd[1] = ft_strjoin("PWD=", getcwd(buf, BUFSIZ));
 	if (!pwd[0] || !pwd[1])

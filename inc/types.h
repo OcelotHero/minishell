@@ -29,7 +29,7 @@
 # define E_EOFW	"minishell: warning: here-document delimited by end-of-file \
 (wanted `%s')\n"
 # define E_EXPO	"minishell: export: `%s': not a valid identifier\n"
-# define E_CHDR "minishell: cd: %s\n"
+# define E_CHDR "minishell: cd: %s: %s\n"
 # define E_CDAG "minishell: cd: too many arguments\n"
 # define E_PWDA "minishell: pwd: too many arguments\n"
 # define E_PWDV "minishell: pwd: %s\n"

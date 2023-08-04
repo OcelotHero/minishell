@@ -35,8 +35,8 @@ void	trim_tokens(t_list **tokens);
 int		data_length(char *wrd, int *n, t_list *vars);
 int		populate_data(char *wrd, int *n, char *data, t_list *vars);
 
-int		interpolation_length(int *i, char *str, t_list *var_list);
+int		interpolation_length(int **i, char *str, t_list *var_list);
 void	interpolation_value(int *i, char *str, t_list *var_list, char **data);
-void	interpolate_var(int *i, char *str, t_list *var_list, char **data);
+void	interpolate_var(int **i, char *str, t_list *var_list, char **data);
 
 #endif

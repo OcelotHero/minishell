@@ -25,20 +25,21 @@ static int	n_digit(int num)
 	return (n + 1);
 }
 
-int	interpolation_length(int *i, char *str, t_list *var_list)
+int	interpolation_length(int **n, char *str, t_list *var_list)
 {
-	int		count;
-	char	*val;
+	int			count;
+	char		*val;
 
-	if (str[*i + 1] == '"')
+	if (str[*n[0] + 1] == '"' && *n[1] == DEFAULT)
 		return (0);
-	if (!ft_isalnum(str[*i + 1]) && str[*i + 1] != '?' && str[*i + 1] != '_')
+	if (!ft_isalnum(str[*n[0] + 1]) && str[*n[0] + 1] != '?'
+		&& str[*n[0] + 1] != '_')
 		return (1);
-	if (ft_isdigit(str[*i + 1]) || str[*i + 1] == '?')
-		return ((str[++(*i)] == '?') * n_digit(g_errno));
-	val = var_value(&str[*i + 1], var_list);
-	while (ft_isalnum(str[*i + 1]) || str[*i + 1] == '_')
-		(*i)++;
+	if (ft_isdigit(str[*n[0] + 1]) || str[*n[0] + 1] == '?')
+		return ((str[++(*n[0])] == '?') * n_digit(g_errno));
+	val = var_value(&str[*n[0] + 1], var_list);
+	while (ft_isalnum(str[*n[0] + 1]) || str[*n[0] + 1] == '_')
+		(*n[0])++;
 	if (!val)
 		return (0);
 	count = 0;
@@ -69,17 +70,18 @@ void	interpolation_value(int *i, char *str, t_list *var_list, char **data)
 	}
 }
 
-void	interpolate_var(int *i, char *str, t_list *var_list, char **data)
+void	interpolate_var(int **n, char *str, t_list *var_list, char **data)
 {
 	int		error;
 
-	if (str[*i + 1] == '"')
+	if (str[*n[0] + 1] == '"' && *n[1] == DEFAULT)
 		return ;
-	if (!ft_isalnum(str[*i + 1]) && str[*i + 1] != '?' && str[*i + 1] != '_')
-		*((*data)++) = str[*i];
-	else if (ft_isdigit(str[*i + 1]) || str[*i + 1] == '?')
+	if (!ft_isalnum(str[*n[0] + 1]) && str[*n[0] + 1] != '?'
+		&& str[*n[0] + 1] != '_')
+		*((*data)++) = str[*n[0]];
+	else if (ft_isdigit(str[*n[0] + 1]) || str[*n[0] + 1] == '?')
 	{
-		if (str[*i + 1] == '?')
+		if (str[*n[0] + 1] == '?')
 		{
 			error = g_errno;
 			*data += n_digit(error);
@@ -90,8 +92,8 @@ void	interpolate_var(int *i, char *str, t_list *var_list, char **data)
 			}
 			*(--(*data)) = error + '0';
 		}
-		*data += (str[++(*i)] == '?') * n_digit(g_errno);
+		*data += (str[++(*n[0])] == '?') * n_digit(g_errno);
 	}
 	else
-		interpolation_value(i, str, var_list, data);
+		interpolation_value(n[0], str, var_list, data);
 }

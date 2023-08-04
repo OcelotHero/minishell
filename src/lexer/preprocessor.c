@@ -36,7 +36,7 @@ int	data_length(char *wrd, int *n, t_list *vars)
 	while (wrd[++i] && i < n[0])
 	{
 		if (state != SQUOTE && wrd[i] == '$' && n[1] != DLESS)
-			count += interpolation_length(&i, wrd, vars);
+			count += interpolation_length((int *[]){&i, &state}, wrd, vars);
 		else
 		{
 			if (is_escaped(&i, wrd, state, n[1]))
@@ -64,7 +64,7 @@ int	populate_data(char *wrd, int *n, char *data, t_list *vars)
 		if (s[0] != SQUOTE && wrd[i] == '*')
 			s[1] |= WILD;
 		if (s[0] != SQUOTE && wrd[i] == '$' && n[1] != DLESS)
-			interpolate_var(&i, wrd, vars, &data);
+			interpolate_var((int *[]){&i, &s[0]}, wrd, vars, &data);
 		else
 		{
 			if (is_escaped(&i, wrd, s[0], n[1]))

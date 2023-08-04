@@ -27,8 +27,8 @@ int	builtin_echo(char **opts, t_list **var_list)
 		if (opts[i][j++] == '-' && !(flag & 2))
 		{
 			while (opts[i][j++] == 'n')
-				flag = opts[i][j] == '\0';
-			if (flag)
+				flag |= opts[i][j] == '\0';
+			if ((flag & 1) && !opts[i][j - 1])
 				continue ;
 		}
 		if (flag & 2)
