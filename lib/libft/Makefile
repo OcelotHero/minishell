@@ -10,6 +10,9 @@ SRC_SUP = itoa putchar_fd putendl_fd putnbr_fd putstr_fd split striteri strjoin 
 SRC_BNS = lstadd_back lstadd_front lstclear lstdelone lstiter lstlast lstmap lstnew \
 		  lstsize lstremove_if
 
+# get_next_line source files
+SRC_GNL = get_next_line_bonus get_next_line_utils_bonus # get_next_line get_next_line_utils
+
 # Directories
 SRC_DIR = src
 OBJ_DIR = obj
@@ -18,10 +21,12 @@ OBJ_DIR = obj
 ELEMN_D = elementary
 SUPPL_D = supplementary
 BONUS_D = bonus
+GETNL_D = gnl
 
 ##############################        Objects        ################################
 OBJS_M	+= $(addprefix $(OBJ_DIR)/ft_, $(addsuffix .o, $(SRC_ELE)))
 OBJS_M	+= $(addprefix $(OBJ_DIR)/ft_, $(addsuffix .o, $(SRC_SUP)))
+OBJS_M	+= $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(SRC_GNL)))
 
 OBJS_B	+= $(addprefix $(OBJ_DIR)/ft_, $(addsuffix .o, $(SRC_BNS)))
 
@@ -29,7 +34,7 @@ OBJS_B	+= $(addprefix $(OBJ_DIR)/ft_, $(addsuffix .o, $(SRC_BNS)))
 NAME	= libft.a
 INCL	= inc
 
-VPATH	+= %.c $(addprefix $(SRC_DIR)/, $(ELEMN_D) $(SUPPL_D) $(BONUS_D))
+VPATH	+= %.c $(addprefix $(SRC_DIR)/, $(ELEMN_D) $(SUPPL_D) $(GETNL_D) $(BONUS_D))
 
 LIB		= ar rc
 CC		= cc

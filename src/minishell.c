@@ -14,9 +14,11 @@
 #include "parser.h"
 #include "signals.h"
 #include "ft_dprintf.h"
+#include <termios.h>
 #include <stdbool.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include "get_next_line.h"
 
 #define E_SYTX "minishell: syntax error near unexpected token `%s'\n"
 #define E_ESCP "\n"
@@ -61,7 +63,7 @@ static int	semi_syntax_handler(char *line)
 	return ((*line == '\\' && !(*(line + 1))) || *line);
 }
 
-static int	process(char *line, t_list **vars)
+static int	process(char *line, t_list **vars, char **envs)
 {
 	int		i;
 	int		state;
@@ -77,7 +79,7 @@ static int	process(char *line, t_list **vars)
 
 	ast = NULL;
 	tokens = NULL;
-	cmd = (t_cmd){1, {0, 0, 0}, 0, "", NULL, NULL};
+	cmd = (t_cmd){1, {0, 0, 0}, 0, "", NULL, .envs = envs, NULL};
 	while (*line && cmd.pid)
 	{
 		i = -1;
@@ -121,6 +123,18 @@ static int	process(char *line, t_list **vars)
 	return (cmd.pid <= 0);
 }
 
+void	setup_termios(struct termios *termios)
+{
+	struct termios	new_termios;
+
+	tcgetattr(STDOUT_FILENO, termios);
+	new_termios = *termios;
+	new_termios.c_lflag &= ~ECHOCTL;
+	tcsetattr(STDOUT_FILENO, TCSAFLUSH, &new_termios);
+}
+
+int	g_errno = 0;
+
 int	main(int narg, char **args, char **envs)
 {
 	int		res;
@@ -128,13 +142,15 @@ int	main(int narg, char **args, char **envs)
 	char	*dir;
 	char	**line;
 	t_list	*vars;
+	struct termios	termios;
 
 
 	vars = NULL;
 	line = (char *[]){"", NULL};
 
-	while (*envs)
-		ft_lstadd_front(&vars, ft_lstnew(ft_strdup(*(envs++))));
+	int i = 0;
+	while (envs[i])
+		ft_lstadd_front(&vars, ft_lstnew(ft_strdup(envs[i++])));
 	dir = getcwd(buf, BUFSIZ);
 	ft_lstadd_front(&vars, ft_lstnew(ft_strdup("SHLVL=1")));
 	ft_lstadd_front(&vars, ft_lstnew(ft_strjoin("PWD=", dir)));
@@ -148,7 +164,7 @@ int	main(int narg, char **args, char **envs)
 
 		line[0] = args[2];
 		if (line[0] && *line[0] && !semi_syntax_handler(line[0]))
-			process(line[0], &vars);
+			process(line[0], &vars, envs);
 		ft_lstclear(&vars, free);
 		return (g_errno);
 	}
@@ -157,8 +173,18 @@ int	main(int narg, char **args, char **envs)
 		while (line[0])
 		{
 			setup_signals();
-			line[0] = readline("$minishell> ");
-			signal(SIGINT, SIG_DFL);
+			setup_termios(&termios);
+			// line[0] = readline("$minishell> ");
+			if (isatty(fileno(stdin)))
+				line[0] = readline("$minishell> ");
+			else
+			{
+				char *ln;
+				ln = get_next_line(fileno(stdin));
+				line[0] = ft_strtrim(ln, "\n");
+				free(ln);
+			}
+			signal(SIGINT, SIG_IGN);
 
 			if (line[0] && *line[0])
 			{
@@ -170,7 +196,7 @@ int	main(int narg, char **args, char **envs)
 
 				if (semi_syntax_handler(line[0]))
 					continue ;
-				if (process(line[0], &vars))
+				if (process(line[0], &vars, envs))
 					break ;
 			}
 		}

@@ -14,16 +14,24 @@
 
 int	builtin_cd(char **opts, t_list **var_list)
 {
-	int	i;
+	char	*pwd[2];
+	char	buf[BUFSIZ];
 
-	(void) var_list;
-	i = 0;
-	while (opts[i])
-		i++;
-	if (i != 2)
+	if (opts[2])
+		return (error_msg(1, E_CDAG));
+	if (chdir(opts[1]))
+		return (error_msg(errno, E_CHDR, strerror(errno), opts[1]));
+	pwd[0] = ft_strjoin("OLDPWD=", var_value("PWD", *var_list));
+	pwd[1] = ft_strjoin("PWD=", getcwd(buf, BUFSIZ));
+	if (!pwd[0] || !pwd[1])
 	{
-		ft_dprintf(2, "cd: too many arguments\n");
-		return (1);
+		if (pwd[0])
+			free(pwd[0]);
+		if (pwd[1])
+			free(pwd[1]);
+		return (error_msg(errno, E_MLOC, strerror));
 	}
-	return (chdir(opts[1]));
+	if (builtin_export((char *[]){"export", pwd[0], pwd[1], NULL}, var_list))
+		return (1);
+	return (0);
 }

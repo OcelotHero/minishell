@@ -61,6 +61,7 @@ int	parse_expr(t_list *node, t_list **vars, t_cmd *cmd, int valid)
 
 	i = 0;
 	error = 0;
+	cmd->ior_start = NULL;
 	while (!error && !(((t_token *)node->content)->type
 			& (LPAREN | RPAREN | OR | SEMI | OR_IF | AND_IF | END)))
 	{
@@ -83,6 +84,8 @@ int	parse_expr(t_list *node, t_list **vars, t_cmd *cmd, int valid)
 
 int	execute_cmd(t_list **vars, t_cmd *cmd)
 {
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
 	if (cmd->opts[0] && !ft_strcmp(cmd->opts[0], "cd"))
 		return (builtin_cd(cmd->opts, vars));
 	if (cmd->opts[0] && !ft_strcmp(cmd->opts[0], "echo"))
@@ -97,7 +100,7 @@ int	execute_cmd(t_list **vars, t_cmd *cmd)
 		return (builtin_pwd(cmd->opts, vars));
 	if (cmd->opts[0] && !ft_strcmp(cmd->opts[0], "unset"))
 		return (builtin_unset(cmd->opts, vars));
-	return (execve(cmd->path, cmd->opts, NULL));
+	return (execve(cmd->path, cmd->opts, cmd->envs));
 }
 
 int	exec(t_list **vars, t_cmd *cmd)
@@ -154,7 +157,7 @@ int	proto(t_list *node, t_list **vars, t_cmd *cmd, int flags)
 
 	if (parse_expr(node, vars, cmd, flags & 0x1) || !(flags & 1))
 		return (1);
-	if (!cmd->child && cmd->opts[0] && is_builtin(cmd->opts[0]))
+	if (!cmd->child && is_builtin(cmd->opts[0]))
 		return (exec_builtin(vars, cmd));
 	ft_swap(&cmd->fd[0], &cmd->fd[2]);
 	cmd->pid = fork();
@@ -164,7 +167,7 @@ int	proto(t_list *node, t_list **vars, t_cmd *cmd, int flags)
 		cmd->fd[0] = 0;
 	if (cmd->fd[1] && (close(cmd->fd[1]) || 1))
 		cmd->fd[1] = 0;
-	if (!(flags & 2))
+	if (!(flags & 2) || !cmd->pid)
 		return (0);
 	if (cmd->fd[2] && (close(cmd->fd[2]) || 1))
 		cmd->fd[2] = 0;

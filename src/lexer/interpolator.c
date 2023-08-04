@@ -30,10 +30,12 @@ int	interpolation_length(int *i, char *str, t_list *var_list)
 	int		count;
 	char	*val;
 
+	if (str[*i + 1] == '"')
+		return (0);
 	if (!ft_isalnum(str[*i + 1]) && str[*i + 1] != '?' && str[*i + 1] != '_')
 		return (1);
 	if (ft_isdigit(str[*i + 1]) || str[*i + 1] == '?')
-		return ((str[++(*i)] == '?') * n_digit(errno));
+		return ((str[++(*i)] == '?') * n_digit(g_errno));
 	val = var_value(&str[*i + 1], var_list);
 	while (ft_isalnum(str[*i + 1]) || str[*i + 1] == '_')
 		(*i)++;
@@ -71,14 +73,16 @@ void	interpolate_var(int *i, char *str, t_list *var_list, char **data)
 {
 	int		error;
 
+	if (str[*i + 1] == '"')
+		return ;
 	if (!ft_isalnum(str[*i + 1]) && str[*i + 1] != '?' && str[*i + 1] != '_')
 		*((*data)++) = str[*i];
 	else if (ft_isdigit(str[*i + 1]) || str[*i + 1] == '?')
 	{
 		if (str[*i + 1] == '?')
 		{
-			error = errno;
-			*data += n_digit(errno);
+			error = g_errno;
+			*data += n_digit(error);
 			while (error >= 10)
 			{
 				*(--(*data)) = (error % 10) + '0';
@@ -86,7 +90,7 @@ void	interpolate_var(int *i, char *str, t_list *var_list, char **data)
 			}
 			*(--(*data)) = error + '0';
 		}
-		*data += (str[++(*i)] == '?') * n_digit(errno);
+		*data += (str[++(*i)] == '?') * n_digit(g_errno);
 	}
 	else
 		interpolation_value(i, str, var_list, data);

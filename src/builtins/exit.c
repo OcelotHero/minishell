@@ -17,10 +17,7 @@ int	builtin_exit(char **opts, t_list **var_list)
 	int	i;
 
 	if (opts[2])
-	{
-		ft_dprintf(2, "exit: too many arguments\n");
-		return (1);
-	}
+		return (error_msg(2, E_EXTA));
 	if (!opts[1])
 		return (0);
 	i = -1;
@@ -33,9 +30,6 @@ int	builtin_exit(char **opts, t_list **var_list)
 			break ;
 	}
 	if (opts[1][i])
-	{
-		ft_dprintf(2, "exit: %s: numeric argument required\n", opts[1]);
-		return (1);
-	}
-	return (ft_atoi(opts[1]));
+		return (error_msg(255, E_EXTN, opts[1]));
+	return (error_msg(ft_atoi(opts[1]), "") && 0);
 }

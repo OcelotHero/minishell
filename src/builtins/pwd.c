@@ -18,11 +18,11 @@ int	builtin_pwd(char **opts, t_list **var_list)
 	char	*dir;
 
 	(void) var_list;
-	(void) opts;
+	if (opts[1])
+		return (error_msg(1, E_PWDA));
 	dir = getcwd(buf, BUFSIZ);
-	if (dir)
-		ft_dprintf(1, "%s\n", dir);
-	else
-		perror("pwd");
-	return (!dir);
+	if (!dir)
+		return (error_msg(errno, E_PWDV, strerror(errno)));
+	ft_dprintf(1, "%s\n", dir);
+	return (0);
 }

@@ -88,6 +88,7 @@ int	get_heredoc(t_token *token, char *prompt, t_list *vars)
 	int		fd;
 	char	*line;
 
+	errno = 0;
 	rl_event_hook = event;
 	signal(SIGINT, int_handler);
 	fd = open(".tmp", O_WRONLY | O_CREAT | O_APPEND, 0644);

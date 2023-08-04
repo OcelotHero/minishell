@@ -10,9 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-// #include <stdio.h>
-// #include <stdlib.h>
-// #include <glob.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <glob.h>
 
 // int main()
 // {

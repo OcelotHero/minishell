@@ -7,7 +7,7 @@ SRC_SGN = handler
 SRC_UTL = utils
 
 # Mandatory source files
-SRC_MAN = minishell
+SRC_MAN = minishell get_next_line get_next_line_utils
 
 # Bonus source files
 SRC_BNS = minishell_bonus

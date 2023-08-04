@@ -29,6 +29,13 @@
 # define E_EOFW	"minishell: warning: here-document delimited by end-of-file \
 (wanted `%s')\n"
 # define E_EXPO	"minishell: export: `%s': not a valid identifier\n"
+# define E_CHDR "minishell: cd: %s\n"
+# define E_CDAG "minishell: cd: too many arguments\n"
+# define E_PWDA "minishell: pwd: too many arguments\n"
+# define E_PWDV "minishell: pwd: %s\n"
+# define E_ENVA "minishell: env: `%s': No such file or directory\n"
+# define E_EXTA "minishell: exit: too many arguments\n"
+# define E_EXTN "minishell: exit: %s: numeric argument required\n"
 
 extern int	g_errno;
 
@@ -80,6 +87,7 @@ typedef struct s_cmd {
 	int		child;
 	char	path[MAX_SIZE];
 	char	*opts[MAX_OPTS];
+	char	**envs;
 	t_list	*ior_start;
 }	t_cmd;
 
