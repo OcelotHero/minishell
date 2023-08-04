@@ -7,7 +7,7 @@ SRC_SGN = handler
 SRC_UTL = utils
 
 # Mandatory source files
-SRC_MAN = minishell get_next_line get_next_line_utils
+SRC_MAN = minishell
 
 # Bonus source files
 SRC_BNS = minishell_bonus
@@ -61,9 +61,15 @@ RM		= rm -rf
 
 OSNAME	= $(shell uname -s)
 
+ifeq ($(shell test -d "/Users/${USER}/.brew"; echo $$?), 1)
+	BREW_D = homebrew
+else
+	BREW_D = .brew
+endif
+
 ifeq (${OSNAME}, Darwin)
-	OPTS	+= -L"/Users/${USER}/homebrew/opt/readline/lib"
-	INCL	+= -I"/Users/$(USER)/homebrew/opt/readline/include"
+	OPTS	+= "-L/Users/${USER}/${BREW_D}/opt/readline/lib"
+	INCL	+= "-I/Users/${USER}/${BREW_D}/opt/readline/include"
 endif
 
 all:		BNS = 0
