@@ -29,6 +29,7 @@
 # define E_EOFW	"minishell: warning: here-document delimited by end-of-file \
 (wanted `%s')\n"
 # define E_EXPO	"minishell: export: `%s': not a valid identifier\n"
+# define E_UNST	"minishell: unset: `%s': not a valid identifier\n"
 # define E_CHDR "minishell: cd: %s: %s\n"
 # define E_CDAG "minishell: cd: too many arguments\n"
 # define E_PWDA "minishell: pwd: too many arguments\n"
@@ -36,6 +37,15 @@
 # define E_ENVA "minishell: env: `%s': No such file or directory\n"
 # define E_EXTA "minishell: exit: too many arguments\n"
 # define E_EXTN "minishell: exit: %s: numeric argument required\n"
+# define E_SYTX "minishell: syntax error near unexpected token `%s'\n"
+# define E_ESCP "minishell: unexpected EOF with escaped character\n"
+# define E_QUOT "minishell: unexpected EOF while looking for matching `%c'\n"
+
+# ifdef __APPLE__
+#  define LINUX 0
+# else
+#  define LINUX 1
+# endif
 
 extern int	g_errno;
 

@@ -48,7 +48,7 @@ static int	export_var(t_list **var_list, char **arg, int n)
 	while (node)
 	{
 		dif = ft_strncmp(node->content, *arg, n + 1);
-		if ((!dif || dif == ('=' - '+')) && ((char *)node->content)[n] == '=')
+		if (!dif || (dif == ('=' - '+') && ((char *)node->content)[n] == '+'))
 		{
 			if (dif)
 				var = ft_strjoin(node->content, &(*arg)[n + 2]);

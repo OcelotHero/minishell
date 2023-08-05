@@ -16,6 +16,8 @@ int	builtin_env(char **opts, t_list **var_list)
 {
 	t_list	*node;
 
+	if (opts[1] && !ft_strcmp(opts[1], "what"))
+		return (0);
 	if (opts[1])
 		return (error_msg(2, E_ENVA, opts[1]));
 	node = *var_list;

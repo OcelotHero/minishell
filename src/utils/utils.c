@@ -66,23 +66,31 @@ char	*token_str(int type)
 		return (")");
 	if (type == SEMI)
 		return (";");
-	if (type & (LESS | DLESS))
-		return ((char []){'<', '<' * (type == DLESS), '\0'});
-	if (type & (GREAT | DGREAT))
-		return ((char []){'>', '>' * (type == DGREAT), '\0'});
-	if (type & (OR | OR_IF))
-		return ((char []){'|', '|' * (type == OR_IF), '\0'});
-	if (type & (AND | AND_IF))
-		return ((char []){'&', '&' * (type == AND_IF), '\0'});
+	if (type == LESS)
+		return ("<");
+	if (type == DLESS)
+		return ("<<");
+	if (type == GREAT)
+		return (">");
+	if (type == DGREAT)
+		return (">>");
+	if (type == OR)
+		return ("|");
+	if (type == OR_IF)
+		return ("||");
+	if (type == AND)
+		return ("&");
+	if (type == AND_IF)
+		return ("&&");
 	return ("");
 }
 
 int	is_builtin(char *cmd)
 {
-	return (cmd && (!ft_strcmp_ign(cmd, "cd") || !ft_strcmp_ign(cmd, "echo")
-			|| !ft_strcmp_ign(cmd, "env") || !ft_strcmp(cmd, "exit")
-			|| !ft_strcmp(cmd, "export") || !ft_strcmp_ign(cmd, "pwd")
-			|| !ft_strcmp(cmd, "unset")));
+	return (cmd && (!ft_strccmp(cmd, "cd", !LINUX)
+			|| !ft_strccmp(cmd, "echo", !LINUX) || !ft_strccmp(cmd, "unset", 0)
+			|| !ft_strccmp(cmd, "env", !LINUX) || !ft_strccmp(cmd, "export", 0)
+			|| !ft_strccmp(cmd, "pwd", !LINUX) || !ft_strccmp(cmd, "exit", 0)));
 }
 
 int	error_msg(int error, char *format, ...)

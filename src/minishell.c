@@ -20,8 +20,7 @@
 #include <readline/history.h>
 #include "get_next_line.h"
 
-#define E_SYTX "minishell: syntax error near unexpected token `%s'\n"
-#define E_ESCP "\n"
+int	g_errno = 0;
 
 void	clear(void *content)
 {
@@ -66,8 +65,10 @@ static int	semi_syntax_handler(char *line)
 static int	process(char *line, t_list **vars, char **envs)
 {
 	int		i;
+	int		stop;
 	int		state;
 	int		res;
+	int		ret;
 	char	c;
 	char	*sep;
 	char	*tkn;
@@ -80,7 +81,8 @@ static int	process(char *line, t_list **vars, char **envs)
 	ast = NULL;
 	tokens = NULL;
 	cmd = (t_cmd){1, {0, 0, 0}, 0, "", NULL, .envs = envs, NULL};
-	while (*line && cmd.pid)
+	stop = 0;
+	while (*line && cmd.pid && !stop)
 	{
 		i = -1;
 		state = DEFAULT;
@@ -97,6 +99,7 @@ static int	process(char *line, t_list **vars, char **envs)
 		sep = &line[i - !line[i]];
 		c = *(sep + 1);
 		*(sep + 1) = '\0';
+		ret = 1;
 		if (!tokenize(&tokens, line, *vars))
 		{
 			postprocess_tokens(tokens);
@@ -105,22 +108,35 @@ static int	process(char *line, t_list **vars, char **envs)
 			if (((t_token *)tmp->content)->type != END)
 			{
 				res = expr(&tmp, &ast);
+				g_errno = res;
 				tkn = token_str(((t_token *)tmp->content)->type);
 				if (!(*tkn))
 					tkn = "newline";
 				if (res == 2)
 					ft_dprintf(2, E_SYTX, tkn);
 				if (ast && res != 1)
-					interpret_ast(ast, vars, &cmd, res == 0);
+					ret = interpret_ast(ast, vars, &cmd, res == 0);
 				ast_clear(&ast, NULL);
 			}
+			if (cmd.pid && !access(".tmp", F_OK))
+				unlink(".tmp");
 		}
-
+		if (cmd.opts[0] && ft_strcmp(cmd.opts[0], "exit"))
+			g_errno *= ret;
+		else if (cmd.opts[0] && !ft_strcmp(cmd.opts[0], "exit"))
+		{
+			if (!ret)
+				stop = 1;
+			else
+				g_errno *= ret;
+		}
 		ft_lstclear(&tokens, clear);
 		*(sep + 1) = c;
 		line = sep + 1;
+		if (res)
+			g_errno = res;
 	}
-	return (cmd.pid <= 0);
+	return (cmd.pid <= 0 || stop);
 }
 
 void	setup_termios(struct termios *termios)
@@ -132,8 +148,6 @@ void	setup_termios(struct termios *termios)
 	new_termios.c_lflag &= ~ECHOCTL;
 	tcsetattr(STDOUT_FILENO, TCSAFLUSH, &new_termios);
 }
-
-int	g_errno = 0;
 
 int	main(int narg, char **args, char **envs)
 {
@@ -151,9 +165,9 @@ int	main(int narg, char **args, char **envs)
 	int i = 0;
 	while (envs[i])
 		ft_lstadd_front(&vars, ft_lstnew(ft_strdup(envs[i++])));
-	dir = getcwd(buf, BUFSIZ);
-	ft_lstadd_front(&vars, ft_lstnew(ft_strdup("SHLVL=1")));
-	ft_lstadd_front(&vars, ft_lstnew(ft_strjoin("PWD=", dir)));
+	// dir = getcwd(buf, BUFSIZ);
+	// ft_lstadd_front(&vars, ft_lstnew(ft_strdup("SHLVL=1")));
+	// ft_lstadd_front(&vars, ft_lstnew(ft_strjoin("PWD=", dir)));
 
 
 	if (narg == 3)
@@ -174,16 +188,16 @@ int	main(int narg, char **args, char **envs)
 		{
 			setup_signals();
 			setup_termios(&termios);
-			// line[0] = readline("$minishell> ");
-			if (isatty(fileno(stdin)))
-				line[0] = readline("$minishell> ");
-			else
-			{
-				char *ln;
-				ln = get_next_line(fileno(stdin));
-				line[0] = ft_strtrim(ln, "\n");
-				free(ln);
-			}
+			line[0] = readline("$minishell> ");
+			// if (isatty(fileno(stdin)))
+			// 	line[0] = readline("$minishell> ");
+			// else
+			// {
+			// 	char *ln;
+			// 	ln = get_next_line(fileno(stdin));
+			// 	line[0] = ft_strtrim(ln, "\n");
+			// 	free(ln);
+			// }
 			signal(SIGINT, SIG_IGN);
 
 			if (line[0] && *line[0])

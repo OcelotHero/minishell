@@ -30,7 +30,7 @@ int	interpolation_length(int **n, char *str, t_list *var_list)
 	int			count;
 	char		*val;
 
-	if (str[*n[0] + 1] == '"' && *n[1] == DEFAULT)
+	if ((str[*n[0] + 1] == '"' || str[*n[0] + 1] == '\'')  && *n[1] == DEFAULT)
 		return (0);
 	if (!ft_isalnum(str[*n[0] + 1]) && str[*n[0] + 1] != '?'
 		&& str[*n[0] + 1] != '_')
@@ -74,7 +74,7 @@ void	interpolate_var(int **n, char *str, t_list *var_list, char **data)
 {
 	int		error;
 
-	if (str[*n[0] + 1] == '"' && *n[1] == DEFAULT)
+	if ((str[*n[0] + 1] == '"' || str[*n[0] + 1] == '\'') && *n[1] == DEFAULT)
 		return ;
 	if (!ft_isalnum(str[*n[0] + 1]) && str[*n[0] + 1] != '?'
 		&& str[*n[0] + 1] != '_')

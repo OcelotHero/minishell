@@ -19,7 +19,23 @@ static int	comp_var(const char *s1, const char *s2)
 
 int	builtin_unset(char **opts, t_list **var_list)
 {
-	while (*(++opts))
-		ft_lstremove_if(var_list, *opts, comp_var, free);
-	return (0);
+	int	i;
+	int	j;
+	int	error;
+
+	i = 0;
+	error = 0;
+	while (opts[++i])
+	{
+		j = 0;
+		error = 0;
+		if ((ft_isalpha(opts[i][j]) || opts[i][j] == '_') && ++j)
+			while (opts[i][j] && (ft_isalnum(opts[i][j]) || opts[i][j] == '_'))
+				j++;
+		if (opts[i][j] || !j)
+			error = error_msg(1, E_UNST, opts[i]);
+		if (!error && !opts[i][j])
+			ft_lstremove_if(var_list, opts[i], comp_var, free);
+	}
+	return (error);
 }

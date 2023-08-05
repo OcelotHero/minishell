@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "parser.h"
+#include "get_next_line.h"
 
 static void	expand_var(int fd, int *i, char *str, t_list *vars)
 {
@@ -36,7 +37,7 @@ static int	process_line(int fd, t_token *token, char *ln, t_list *vars)
 {
 	int		i;
 
-	if (!ln || ln[0] == 3
+	if (!ln || ln[0] == '\x03'
 		|| !ft_strncmp(ln, token->data, ft_strlen(token->data) + 1))
 		return (1);
 	i = -1;
@@ -86,27 +87,36 @@ void	int_handler(int signo)
 int	get_heredoc(t_token *token, char *prompt, t_list *vars)
 {
 	int		fd;
-	char	*ln;
+	char	*line;
 
 	errno = 0;
 	rl_event_hook = event;
 	signal(SIGINT, int_handler);
-	fd = open(".tmp", O_WRONLY | O_CREAT | O_APPEND, 0644);
+	fd = open(".tmp", O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd < 0)
 		return (error_msg(errno, E_FILE, ".tmp", strerror(errno)));
 	while (1)
 	{
-		ln = readline(prompt);
-		if (process_line(fd, token, ln, vars))
+		line = readline(prompt);
+		// if (isatty(fileno(stdin)))
+		// 	line = readline(prompt);
+		// else
+		// {
+		// 	char *ln;
+		// 	ln = get_next_line(fileno(stdin));
+		// 	line = ft_strtrim(ln, "\n");
+		// 	free(ln);
+		// }
+		if (process_line(fd, token, line, vars))
 			break ;
 	}
 	close(fd);
-	if (!ln && errno)
-		return (error_msg(errno, E_MLOC, strerror(errno))
+	if (!line && errno)
+		return (error_msg(2, E_MLOC, strerror(errno))
 			&& (unlink(".tmp") || 1));
-	if (!ln)
-		ft_dprintf(2, E_EOFW, token->data);
-	if (ln)
-		free(ln);
-	return (0);
+	if (!line)
+		return (ft_dprintf(2, E_EOFW, token->data) && 0);
+	fd = line[0] == '\x03';
+	free(line);
+	return (fd);
 }

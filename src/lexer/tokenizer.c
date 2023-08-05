@@ -117,28 +117,28 @@ int	tokenize_line(t_list **tokens, int *n, char *str, t_list *vars)
 int	tokenize(t_list **tokens, char *str, t_list *vars)
 {
 	int	*n;
-	int	state;
+	int	s;
 
 	n = (int []){-1, 0, ft_strlen(str)};
-	state = DEFAULT;
+	s = DEFAULT;
 	while (++(n[0]) <= n[2])
 	{
-		if (state != SQUOTE && str[n[0]] == '\\' && !str[n[0] + 1])
+		if (s != SQUOTE && str[n[0]] == '\\' && !str[n[0] + 1])
 			break ;
-		if (state != SQUOTE && str[n[0]] == '\\')
+		if (s != SQUOTE && str[n[0]] == '\\')
 			(n[0])++;
-		else if ((str[n[0]] == '\'' && state == SQUOTE)
-			|| (str[n[0]] == '"' && state == DQUOTE))
-			state = DEFAULT;
-		else if ((str[n[0]] == '\'' || str[n[0]] == '"') && state == DEFAULT)
-			state = (str[n[0]] != '"') * SQUOTE + (str[n[0]] == '"') * DQUOTE;
-		else if (state == DEFAULT && tokenize_line(tokens, n, str, vars))
+		else if ((str[n[0]] == '\'' && s == SQUOTE)
+			|| (str[n[0]] == '"' && s == DQUOTE))
+			s = DEFAULT;
+		else if ((str[n[0]] == '\'' || str[n[0]] == '"') && s == DEFAULT)
+			s = (str[n[0]] != '"') * SQUOTE + (str[n[0]] == '"') * DQUOTE;
+		else if ((s == DEFAULT || !str[n[0]])
+			&& tokenize_line(tokens, n, str, vars))
 			return (1);
 	}
-	if (state != DEFAULT)
-		ft_dprintf(2, "minishell: unexpected EOF while looking for matching"\
-			" `%c'\n", (state == SQUOTE) * '\'' + (state != SQUOTE) * '"');
+	if (s != DEFAULT)
+		error_msg(1, E_QUOT, (s == SQUOTE) * '\'' + (s != SQUOTE) * '"');
 	else if (n[0] <= n[2])
-		ft_dprintf(2, "minishell: unexpected EOF with escaped character\n");
-	return ((state != DEFAULT || n[0] <= n[2]) << 1);
+		error_msg(1, E_ESCP);
+	return (s != DEFAULT || n[0] <= n[2]);
 }

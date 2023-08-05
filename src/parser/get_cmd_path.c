@@ -21,12 +21,11 @@ static void	get_env_cmd_path(char *cmd, char *path, t_list *vars)
 	char	*sep;
 	char	*paths;
 
-	paths = NULL;
-	while (vars && !paths)
+	paths = var_value("PATH", vars);
+	if ((!paths || !*paths) && !access(cmd, F_OK))
 	{
-		if (!ft_strncmp(vars->content, "PATH=", 5))
-			paths = ft_strchr(vars->content, '=') + 1;
-		vars = vars->next;
+		ft_memcpy(path, cmd, ft_strlen(cmd) + 1);
+		return ;
 	}
 	sep = ":";
 	while (*sep && paths)
@@ -37,7 +36,7 @@ static void	get_env_cmd_path(char *cmd, char *path, t_list *vars)
 		ft_memcpy(path, paths, sep - paths);
 		path[sep - paths] = '/';
 		ft_memcpy(path + (sep - paths) + 1, cmd, ft_strlen(cmd) + 1);
-		if (access(path, F_OK) == 0)
+		if (!access(path, F_OK))
 			return ;
 		paths = sep + 1;
 	}
@@ -55,12 +54,14 @@ void	get_cmd_path(char *cmd, char *path, t_list *vars)
 
 	if (!ft_strlen(cmd))
 		return ;
+	if (cmd[0] == '.' && (!cmd[1] || (cmd[1] == '.' && !cmd[2])))
+		return ;
 	i = 0;
-	if (access(cmd, F_OK) == 0)
+	while (cmd[i] && cmd[i] != '/')
+		i++;
+	if (cmd[i] == '/')
 	{
-		while (cmd[i] && cmd[i] != '/')
-			i++;
-		if (cmd[i] == '/')
+		if (!access(cmd, F_OK))
 			ft_memcpy(path, cmd, ft_strlen(cmd) + 1);
 		return ;
 	}
