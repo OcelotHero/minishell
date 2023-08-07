@@ -10,35 +10,63 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <glob.h>
+#include "lexer.h"
 
-// int main()
-// {
-// 	char **found;
-// 	glob_t gstruct;
-// 	int r;
+int insert_matches(t_list *tokens, glob_t *gs, int n, int type)
+{
+	t_list	*node;
+	t_token	*token;
 
-// 	r = glob("\\*.c", GLOB_ERR , NULL, &gstruct);
-// 	/* check for errors */
-// 	if( r!=0 )
-// 	{
-// 		if( r==GLOB_NOMATCH )
-// 			fprintf(stderr,"No matches\n");
-// 		else
-// 			fprintf(stderr,"Some kinda glob error\n");
-// 		exit(1);
-// 	}
+	if (n == gs->gl_pathc)
+		return (n);
+	if (!n)
+	{
+		free(((t_token *)tokens->content)->data);
+		((t_token *)tokens->content)->data = gs->gl_pathv[n];
+		((t_token *)tokens->content)->type = (type & ~WILD);
+		return (insert_matches(tokens, gs, n + 1, (type & ~WILD)));
+	}
+	token = malloc(sizeof(*token));
+	node = ft_lstnew(token);
+	if (!token || !node)
+	{
+		if (token)
+			free(token);
+		return (n);
+	}
+	token->data = gs->gl_pathv[n];
+	token->type = ((type & CMD) == CMD) * ARGS + !(type & CMD) * type;
+	node->next = tokens->next;
+	tokens->next = node;
+	return (insert_matches(node, gs, n + 1, type));
+}
+	
 
-// 	/* success, output found filenames */
-// 	printf("Found %zu filename matches\n",gstruct.gl_pathc);
-// 	found = gstruct.gl_pathv;
-// 	while(*found)
-// 	{
-// 		printf("%s\n",*found);
-// 		found++;
-// 	}
+int	expand_wildcard(t_list *token)
+{
+	int		n;
+	char	*data;
+	glob_t	gs;
 
-// 	return(0);
-// }
+	n = glob(((t_token *)token->content)->data, GLOB_TILDE, NULL, &gs);
+	if (n && n != GLOB_NOMATCH)
+		return (error_msg(errno, E_MLOC, strerror(errno)));
+	if (n == GLOB_NOMATCH)
+	{
+		data = ((t_token *)token->content)->data;
+		data = unquote(data, ft_strlen(data), &n, 0);
+		if (!data)
+			return (error_msg(errno, E_MLOC, strerror(errno)));
+		free(((t_token *)token->content)->data);
+		((t_token *)token->content)->data = data;
+		((t_token *)token->content)->type ^= WILD;
+		return (0);
+	}
+	n = insert_matches(token, &gs, 0, ((t_token *)token->content)->type);
+	while (*(gs.gl_pathv + n))
+		free(*(gs.gl_pathv++ + n));
+	free(gs.gl_pathv);
+	if (n < gs.gl_pathc)
+		return (error_msg(errno, E_MLOC, strerror(errno)));
+	return (0);
+}

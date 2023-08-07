@@ -2,15 +2,16 @@
 # Common source files
 SRC_BIN = cd echo env exit export pwd unset
 SRC_PAR	= ast parser interpreter get_cmd_path get_heredoc
-SRC_LEX = interpolator preprocessor tokenizer postprocessor trimmer
+SRC_LEX = interpolator preprocessor postprocessor
 SRC_SGN = handler
 SRC_UTL = utils
-
-# Mandatory source files
-SRC_MAN = minishell
+SRC_ENT = minishell
 
 # Bonus source files
-SRC_BNS = minishell_bonus
+SRC_BNS = glob
+
+# Conditional recompilation source files
+SRC_REC = trimmer tokenizer
 
 # Directories
 SRC_DIR = src
@@ -40,14 +41,14 @@ OBJS	+= $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(SRC_PAR)))
 OBJS	+= $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(SRC_LEX)))
 OBJS	+= $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(SRC_SGN)))
 OBJS	+= $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(SRC_UTL)))
+OBJS	+= $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(SRC_ENT)))
 
-OBJS_M	+= $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(SRC_MAN)))
+OBJS_R	= $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(SRC_REC)))
 
-OBJS_B	+= $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(SRC_BNS)))
+OBJS_B	= $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(SRC_BNS)))
 
 ##############################  Config declarations  #################################
-NAME_M	= minishell
-NAME_B	= minishell_bonus
+NAME	= minishell
 INCL	= inc
 OPTS	= -lreadline
 
@@ -72,13 +73,15 @@ ifeq (${OSNAME}, Darwin)
 	INCL	+= "-I/Users/${USER}/${BREW_D}/opt/readline/include"
 endif
 
-all:		BNS = 0
-all:		${NAME_M}
+all:		${NAME}
 
-${NAME_M}:	${LIBFT_L} ${FPRNF_L} ${OBJS} ${OBJS_M}
-			@${RM} ${OBJS_B}
-			@echo "    ${NAME_M}"
-			@${CC} ${FLAGS} ${OBJS} ${OBJS_M} ${LIBFT_L} ${FPRNF_L} -o ${NAME_M} ${OPTS}
+${NAME}:	BNS = 0
+${NAME}:	clrbns ${LIBFT_L} ${FPRNF_L} ${OBJS} ${OBJS_R}
+			@echo "    ${NAME}"
+			@${CC} ${FLAGS} ${OBJS} ${OBJS_R} ${LIBFT_L} ${FPRNF_L} -o ${NAME} ${OPTS}
+
+clrbns:
+			@if [ -f ${OBJS_B} ]; then ${RM} ${OBJS_B} ${OBJS_R} ${NAME}; fi
 
 ${OBJ_DIR}/%.o: %.c | ${OBJ_DIR}
 			@echo "    $<"
@@ -107,13 +110,14 @@ fclean:		clean
 			${RM} ${NAME_M} ${NAME_B}
 
 bonus:		BNS = 1
-bonus:		${NAME_B}
+bonus:		clrman ${LIBFT_L} ${FPRNF_L} ${OBJS} ${OBJS_R} ${OBJS_B}
+			@echo "    ${NAME}"
+			@${CC} ${FLAGS} ${OBJS} ${OBJS_R} ${OBJS_B} ${LIBFT_L} ${FPRNF_L} \
+				-o ${NAME} ${OPTS}
 
-${NAME_B}:	${LIBFT_L} ${OBJS} ${OBJS_B}
-			@${RM} ${OBJS_M}
-			@echo "    ${NAME_B}"
-			@${CC} ${FLAGS} ${OBJS} ${OBJS_M} ${LIBFT_L} ${FPRNF_L} -o ${NAME_B} ${OPTS}
+clrman:
+			@if [ ! -f ${OBJS_B} ]; then ${RM} ${OBJS_R} ${NAME}; fi
 
 re:			fclean all
 
-.PHONY:		all clean fclean re
+.PHONY:		all clean fclean re bonus

@@ -12,39 +12,25 @@
 
 #include "lexer.h"
 
-static int	comp_token(const t_token *t1, const t_token *t2)
+int	trim_tokens(t_list **tokens)
 {
-	return (!(t1->type & (CMD | OPTS1 | OPTS2 | ARGS)) || (t1->type & QUOT)
-		|| ft_strlen(t1->data));
-}
-
-static void	free_token(void *token)
-{
-	free(((t_token *)token)->data);
-	free(token);
-}
-
-void	trim_tokens(t_list **tokens)
-{
-	t_list	*prev;
 	t_list	*node;
+	t_token	*token;
 
-	prev = NULL;
+	if (!tokens || !(*tokens))
+		return (0);
 	node = *tokens;
-	while (node)
+	token = (t_token *)node->content;
+	if ((token->type & SEMI) || ((token->type & (CMD | OPTS1 | OPTS2 | ARGS)) 
+			&& !(token->type & QUOT) && !ft_strlen(token->data)))
 	{
-		if (prev && ((t_token *)prev->content)->type < SPACES
-			&& ((t_token *)node->content)->type == SEMI
-			&& ((t_token *)node->next->content)->type == END)
-		{
-			prev->next = node->next;
-			free_token(node->content);
-			free(node);
-			node = prev->next;
-		}
-		else
-			prev = node;
-		node = node->next;
+		*tokens = node->next;
+		free(token->data);
+		free(token);
+		free(node);
+		return (trim_tokens(tokens));
 	}
-	ft_lstremove_if(tokens, NULL, comp_token, free_token);
+	if (BONUS && (token->type & WILD) && expand_wildcard(node))
+		return (1);
+	return (trim_tokens(&(node->next)));
 }

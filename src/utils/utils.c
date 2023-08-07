@@ -45,6 +45,10 @@ int	token_type(char *str)
 		return (RPAREN);
 	if (*str == ';')
 		return (SEMI);
+	if (*str == '<' && *(str + 1) == '>')
+		return (LGREAT | LESS);
+	if (*str == '>' && *(str + 1) == '|')
+		return (NOCLOB | GREAT);
 	if (*str == '<')
 		return (LESS + (*(str + 1) == '<') * (DLESS - LESS));
 	if (*str == '>')

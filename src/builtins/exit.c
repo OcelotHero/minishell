@@ -17,7 +17,7 @@ int	builtin_exit(char **opts, t_list **var_list)
 	int	i;
 
 	if (!opts[1])
-		return (0);
+		return (g_errno);
 	i = -1;
 	while (opts[1][++i])
 	{

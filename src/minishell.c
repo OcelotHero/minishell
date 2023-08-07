@@ -188,16 +188,16 @@ int	main(int narg, char **args, char **envs)
 		{
 			setup_signals();
 			setup_termios(&termios);
-			line[0] = readline("$minishell> ");
-			// if (isatty(fileno(stdin)))
-			// 	line[0] = readline("$minishell> ");
-			// else
-			// {
-			// 	char *ln;
-			// 	ln = get_next_line(fileno(stdin));
-			// 	line[0] = ft_strtrim(ln, "\n");
-			// 	free(ln);
-			// }
+			// line[0] = readline("$minishell> ");
+			if (isatty(fileno(stdin)))
+				line[0] = readline("$minishell> ");
+			else
+			{
+				char *ln;
+				ln = get_next_line(fileno(stdin));
+				line[0] = ft_strtrim(ln, "\n");
+				free(ln);
+			}
 			signal(SIGINT, SIG_IGN);
 
 			if (line[0] && *line[0])
@@ -214,6 +214,7 @@ int	main(int narg, char **args, char **envs)
 					break ;
 			}
 		}
+		// get_next_line(-fileno(stdin));
 		free(line[1]);
 		ft_lstclear(&vars, free);
 		return (g_errno);

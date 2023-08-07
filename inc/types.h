@@ -22,8 +22,11 @@
 # define E_PIPE	"minishell: pipe: %s\n"
 # define E_FORK	"minishell: fork: %s\n"
 # define E_WAIT	"minishell: wait: %s\n"
+# define E_STAT "minishell: stat: %s\n"
+# define E_GLOB	"minishell: glob: %s\n"
 # define E_CMDE	"minishell: %s: command not found\n"
 # define E_CMDS	"minishell: %s: %s\n"
+# define E_DIRS "minishell: %s: is a directory\n"
 # define E_AMBI	"minishell: %s: ambiguous redirect\n"
 # define E_FILE	"minishell: %s: %s\n"
 # define E_EOFW	"minishell: warning: here-document delimited by end-of-file \
@@ -71,7 +74,9 @@ enum e_token_types {
 	DLESS	= 0x020000,
 	DGREAT	= 0x040000,
 	OR_IF	= 0x080000,
-	AND_IF	= 0x100000
+	AND_IF	= 0x100000,
+	NOCLOB	= 0x200000,
+	LGREAT	= 0x400000
 };
 
 enum e_state {

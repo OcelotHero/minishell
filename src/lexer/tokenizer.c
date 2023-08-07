@@ -28,7 +28,7 @@ t_token	*refine_token(char *str, int *n, char *data, t_list *vars)
 	if (token->type == WORD)
 		token->type = token_type(str);
 	token->data = data;
-	if (token->type == WORD)
+	if (token->type == WORD || (token->type & WILD))
 	{
 		if (n[1] & (LESS | GREAT | DLESS | DGREAT))
 			token->type |= FILES;
@@ -88,7 +88,7 @@ int	save_token(t_list **tokens, char *str, int n, t_list *vars)
 		return (1);
 	ft_lstadd_back(tokens, node);
 	type = token_type(str);
-	flag |= (token->type == CMD && ft_strlen(data));
+	flag |= ((token->type & CMD) && ft_strlen(token->data));
 	flag &= !(type & (LPAREN | SEMI | OR | AND | OR_IF | AND_IF | END));
 	if (type == END)
 		node = NULL;

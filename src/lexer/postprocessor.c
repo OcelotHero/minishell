@@ -12,35 +12,36 @@
 
 #include "lexer.h"
 
-char	*unquote(char *wrd, int n, int *unquoted)
+char	*unquote(char *wrd, int n, int *quot, int glob)
 {
 	int		i;
 	int		count;
-	char	*data;
-	char	*res;
+	char	*data[2];
 
 	i = -1;
 	count = 0;
 	while (wrd[++i] && i < n)
-		if (wrd[i] != '\'' && wrd[i] != '"' && (wrd[i] != '\\' || ++i))
+		if (wrd[i] != '\'' && wrd[i] != '"'
+			&& (wrd[i] != '\\' || (glob && wrd[i + 1] == '*') || ++i))
 			count++;
-	data = malloc(sizeof(*data) * (count + 1));
-	if (!data)
+	data[0] = malloc(sizeof(*data[0]) * (count + 1));
+	if (!data[0])
 		return (NULL);
 	i = -1;
-	*unquoted = 0;
-	res = data;
+	*quot = 0;
+	data[1] = data[0];
 	while (wrd[++i] && i < n)
 	{
-		*unquoted |= (wrd[i] == '\'' || wrd[i] == '"');
-		if (wrd[i] != '\'' && wrd[i] != '"' && (wrd[i] != '\\' || ++i))
-			*(data++) = wrd[i];
+		*quot |= (wrd[i] == '\'' || wrd[i] == '"');
+		if (wrd[i] != '\'' && wrd[i] != '"'
+			&& (wrd[i] != '\\' || (glob && wrd[i + 1] == '*') || ++i))
+			*(data[0]++) = wrd[i];
 	}
-	*data = '\0';
-	return (res);
+	*(data[0]) = '\0';
+	return (data[1]);
 }
 
-int	append_token(t_list **tokens, t_list *node, char *data, int unquoted)
+int	append_token(t_list **tokens, t_list *node, char *data, int quot)
 {
 	((t_token *)node->content)->data = ((t_token *)(*tokens)->content)->data;
 	((t_token *)node->content)->type = ((t_token *)(*tokens)->content)->type;
@@ -55,7 +56,7 @@ int	append_token(t_list **tokens, t_list *node, char *data, int unquoted)
 				+ (data[1] == '-') * (OPTS2 - OPTS1);
 	}
 	((t_token *)(*tokens)->content)->data = data;
-	((t_token *)(*tokens)->content)->type |= unquoted * QUOT;
+	((t_token *)(*tokens)->content)->type |= quot * QUOT;
 	((t_token *)(*tokens)->content)->type |= is_builtin(data) * BUILTIN;
 	node->next = (*tokens)->next;
 	(*tokens)->next = node;
@@ -65,19 +66,19 @@ int	append_token(t_list **tokens, t_list *node, char *data, int unquoted)
 
 int	split_token(t_list **tokens, char *wrd, int n)
 {
-	int		unquoted;
+	int		quot;
 	char	*data;
 	t_token	*token;
 	t_list	*node;
 
-	data = unquote(wrd, n, &unquoted);
+	data = unquote(wrd, n, &quot, ((t_token *)(*tokens)->content)->type & WILD);
 	if (!data)
 		return (1);
 	if (ft_strlen(wrd) == n)
 	{
 		free(((t_token *)(*tokens)->content)->data);
 		((t_token *)(*tokens)->content)->data = data;
-		((t_token *)(*tokens)->content)->type |= unquoted * QUOT;
+		((t_token *)(*tokens)->content)->type |= quot * QUOT;
 		return (0);
 	}
 	token = malloc(sizeof(*token));
@@ -89,7 +90,7 @@ int	split_token(t_list **tokens, char *wrd, int n)
 			free(token);
 		return (1);
 	}
-	return (append_token(tokens, node, data, unquoted));
+	return (append_token(tokens, node, data, quot));
 }
 
 int	postprocess(t_list **tokens, int *n, char *wrd)

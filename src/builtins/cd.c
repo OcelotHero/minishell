@@ -19,6 +19,8 @@ int	builtin_cd(char **opts, t_list **var_list)
 
 	if (opts[2])
 		return (error_msg(1, E_CDAG));
+	if (opts[1] && opts[1][0] == '-' && !opts[1][1])
+		opts[1] = var_value("OLDPWD", *var_list);
 	if (opts[1] && chdir(opts[1]))
 		return (error_msg(1, E_CHDR, opts[1], strerror(errno)));
 	if (!opts[1] && chdir(var_value("HOME", *var_list)))

@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "parser.h"
+#include <sys/stat.h>
 
 int	setup_file_fds(t_list **node, t_cmd *cmd, int type)
 {
@@ -18,8 +19,8 @@ int	setup_file_fds(t_list **node, t_cmd *cmd, int type)
 	int	flags;
 
 	io = !(type & (LESS | DLESS));
-	flags = io * (O_WRONLY | O_CREAT | O_APPEND * (type == DGREAT)
-		| O_TRUNC * (type == GREAT)) + !io * O_RDONLY;
+	flags = io * (O_WRONLY | O_CREAT | O_APPEND * ((type & DGREAT) != 0)
+		| O_TRUNC * ((type & GREAT) != 0)) + !io * O_RDONLY;
 	if (((t_token *)(*node)->next->content)->type == FILES
 		&& ((t_token *)(*node)->next->next->content)->type == FILES)
 		return (error_msg(1, E_AMBI, ((t_token *)(*node)->content)->data));
@@ -35,19 +36,19 @@ int	setup_file_fds(t_list **node, t_cmd *cmd, int type)
 	return (0);
 }
 
-int	setup_file_redirections(t_list **node, t_cmd *cmd)
+int	setup_file_redirections(t_list *node, t_cmd *cmd)
 {
 	int	type;
 	int	error;
 
 	error = 0;
-	while (!error && *node && !(((t_token *)(*node)->content)->type
+	while (!error && node && !(((t_token *)node->content)->type
 			& (LPAREN | RPAREN | OR | SEMI | OR_IF | AND_IF | END)))
 	{
-		type = ((t_token *)(*node)->content)->type;
+		type = ((t_token *)node->content)->type;
 		if (type & (LESS | DLESS | GREAT | DGREAT))
-			error = setup_file_fds(node, cmd, type);
-		*node = (*node)->next;
+			error = setup_file_fds(&node, cmd, type);
+		node = node->next;
 	}
 	return (error);
 }
@@ -102,11 +103,12 @@ int	execute_cmd(t_list **vars, t_cmd *cmd)
 
 int	exec(t_list **vars, t_cmd *cmd)
 {
-	char	*s;
+	char		*s;
+	struct stat	sstruct;
 
 	if (cmd->fd[2] && (close(cmd->fd[2]) || 1))
 		cmd->fd[2] = 0;
-	if (setup_file_redirections(&(cmd->ior_start), cmd))
+	if (setup_file_redirections(cmd->ior_start, cmd))
 		return (1);
 	if (((cmd->fd[0] && dup2(cmd->fd[0], STDIN_FILENO) < 0)
 			|| (cmd->fd[1] && dup2(cmd->fd[1], STDOUT_FILENO) < 0))
@@ -119,10 +121,12 @@ int	exec(t_list **vars, t_cmd *cmd)
 		cmd->fd[1] = 0;
 	if (!(cmd->path[0]) && cmd->opts[0] && !is_builtin(cmd->opts[0]))
 		return (error_msg(127, E_CMDE, cmd->opts[0]));
-	if (cmd->path[0] && access(cmd->path, X_OK))
+	if (cmd->path[0] && (access(cmd->path, X_OK) || access(cmd->path, R_OK)))
 		return (error_msg(126, E_CMDS, cmd->opts[0], strerror(errno)));
-	if (cmd->path[0] && access(cmd->path, R_OK))
-		return (error_msg(126, E_CMDS, cmd->opts[0], strerror(errno)));
+	if (cmd->path[0] && stat(cmd->path, &sstruct))
+		return (error_msg(errno, E_STAT, strerror(errno)));
+	if (cmd->path[0] && S_ISDIR(sstruct.st_mode))
+		return (error_msg(errno, E_DIRS, cmd->opts[0]));
 	return (execute_cmd(vars, cmd));
 }
 
@@ -198,15 +202,15 @@ int	evaluate_expr(t_ast *ast, t_list **vars, t_cmd *cmd, int valid)
 
 int	interpret_ast(t_ast *ast, t_list **vars, t_cmd *cmd, int valid)
 {
-	if (((t_token *)ast->expr->content)->type == AND_IF)
-		return ((interpret_ast(ast->left, vars, cmd, valid) && valid)
+	if (ast && ((t_token *)ast->expr->content)->type == AND_IF)
+		return ((interpret_ast(ast->left, vars, cmd, valid))
 			|| interpret_ast(ast->right, vars, cmd, valid));
-	if (((t_token *)ast->expr->content)->type == OR_IF)
-		return (interpret_ast(ast->left, vars, cmd, valid)
+	if (ast && ((t_token *)ast->expr->content)->type == OR_IF)
+		return ((interpret_ast(ast->left, vars, cmd, valid) || !valid)
 			&& interpret_ast(ast->right, vars, cmd, valid));
-	if (evaluate_expr(ast, vars, cmd, valid))
+	if (ast && ast->expr && evaluate_expr(ast, vars, cmd, valid))
 		return (1);
-	if (cmd->pid && ast->expr)
+	if (ast && cmd->pid && ast->expr)
 		if (proto(ast->expr, vars, cmd, 2 | valid))
 			return (1);
 	return (0);
