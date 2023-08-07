@@ -27,7 +27,6 @@ void	clear(void *content)
 	t_token	*token;
 
 	token = (t_token *)content;
-	// printf("%06x, `%s`\n", token->type, token->data);
 	if (token->data)
 		free(token->data);
 	free(content);
@@ -76,7 +75,6 @@ static int	process(char *line, t_list **vars, char **envs)
 	t_ast	*ast;
 	t_list	*tmp;
 	t_list	*tokens;
-
 
 	ast = NULL;
 	tokens = NULL;
@@ -151,31 +149,24 @@ void	setup_termios(struct termios *termios)
 
 int	main(int narg, char **args, char **envs)
 {
-	int		res;
-	char	buf[BUFSIZ];
-	char	*dir;
-	char	**line;
-	t_list	*vars;
+	int				res;
+	int				i;
+	char			buf[BUFSIZ];
+	char			*dir;
+	char			**line;
+	t_list			*vars;
 	struct termios	termios;
-
 
 	vars = NULL;
 	line = (char *[]){"", NULL};
-
-	int i = 0;
+	i = 0;
 	while (envs[i])
 		ft_lstadd_front(&vars, ft_lstnew(ft_strdup(envs[i++])));
-	// dir = getcwd(buf, BUFSIZ);
-	// ft_lstadd_front(&vars, ft_lstnew(ft_strdup("SHLVL=1")));
-	// ft_lstadd_front(&vars, ft_lstnew(ft_strjoin("PWD=", dir)));
-
-
 	if (narg == 3)
 	{
 		line[0] = ft_strrchr(args[2], '\n');
 		if (line[0])
 			line[0][0] = '\0';
-
 		line[0] = args[2];
 		if (line[0] && *line[0] && !semi_syntax_handler(line[0]))
 			process(line[0], &vars, envs);
@@ -188,7 +179,6 @@ int	main(int narg, char **args, char **envs)
 		{
 			setup_signals();
 			setup_termios(&termios);
-			// line[0] = readline("$minishell> ");
 			if (isatty(fileno(stdin)))
 				line[0] = readline("$minishell> ");
 			else
@@ -199,7 +189,6 @@ int	main(int narg, char **args, char **envs)
 				free(ln);
 			}
 			signal(SIGINT, SIG_IGN);
-
 			if (line[0] && *line[0])
 			{
 				if (!line[1] || ft_strcmp(line[0], line[1]))
@@ -207,14 +196,12 @@ int	main(int narg, char **args, char **envs)
 				if (line[1])
 					free(line[1]);
 				line[1] = line[0];
-
 				if (semi_syntax_handler(line[0]))
 					continue ;
 				if (process(line[0], &vars, envs))
 					break ;
 			}
 		}
-		// get_next_line(-fileno(stdin));
 		free(line[1]);
 		ft_lstclear(&vars, free);
 		return (g_errno);

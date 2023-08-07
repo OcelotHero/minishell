@@ -12,7 +12,7 @@
 
 #include "lexer.h"
 
-int insert_matches(t_list *tokens, glob_t *gs, int n, int type)
+int	insert_matches(t_list *tokens, glob_t *gs, int n, int type)
 {
 	t_list	*node;
 	t_token	*token;
@@ -40,7 +40,6 @@ int insert_matches(t_list *tokens, glob_t *gs, int n, int type)
 	tokens->next = node;
 	return (insert_matches(node, gs, n + 1, type));
 }
-	
 
 int	expand_wildcard(t_list *token)
 {

@@ -21,7 +21,7 @@ int	trim_tokens(t_list **tokens)
 		return (0);
 	node = *tokens;
 	token = (t_token *)node->content;
-	if ((token->type & SEMI) || ((token->type & (CMD | OPTS1 | OPTS2 | ARGS)) 
+	if ((token->type & SEMI) || ((token->type & (CMD | OPTS1 | OPTS2 | ARGS))
 			&& !(token->type & QUOT) && !ft_strlen(token->data)))
 	{
 		*tokens = node->next;

@@ -1,11 +1,12 @@
 ############################### Files and directories ###############################
 # Common source files
 SRC_BIN = cd echo env exit export pwd unset
-SRC_PAR	= ast parser interpreter get_cmd_path get_heredoc
+SRC_PAR	= ast parser get_cmd_path get_heredoc
 SRC_LEX = interpolator preprocessor postprocessor
 SRC_SGN = handler
 SRC_UTL = utils
 SRC_ENT = minishell
+SRC_INT = interpreter executables redirector
 
 # Bonus source files
 SRC_BNS = glob
@@ -20,10 +21,12 @@ OBJ_DIR = obj
 
 # Subdirectories
 BLTIN_D = builtins
+INTER_D = interpreter
 PARSR_D = parser
 LEXER_D = lexer
 SIGNL_D = signals
 UTILS_D = utils
+
 
 # libft
 LIBFT_D = libft
@@ -38,9 +41,11 @@ FPRNF_L	= $(addprefix $(LIB_DIR)/${FPRNF_D}/lib, $(addsuffix .a, $(FPRNF_N)))
 ##############################        Objects        ################################
 OBJS	+= $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(SRC_BIN)))
 OBJS	+= $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(SRC_PAR)))
+OBJS	+= $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(SRC_INT)))
 OBJS	+= $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(SRC_LEX)))
 OBJS	+= $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(SRC_SGN)))
 OBJS	+= $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(SRC_UTL)))
+
 OBJS	+= $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(SRC_ENT)))
 
 OBJS_R	= $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(SRC_REC)))
@@ -53,8 +58,8 @@ INCL	= inc
 OPTS	= -lreadline
 
 VPATH	+= %.c $(SRC_DIR)
-VPATH	+= %.c $(addprefix $(SRC_DIR)/, $(BLTIN_D) $(PARSR_D) $(LEXER_D) \
-				 $(SIGNL_D) $(UTILS_D))
+VPATH	+= %.c $(addprefix $(SRC_DIR)/, $(BLTIN_D) $(PARSR_D) $(INTER_D) \
+			$(LEXER_D) $(SIGNL_D) $(UTILS_D))
 
 CC		= cc
 FLAGS	= -g -O0 -MD # -Wall -Wextra -Werror
@@ -77,7 +82,6 @@ all:		${NAME}
 
 ${NAME}:	BNS = 0
 ${NAME}:	clrbns ${LIBFT_L} ${FPRNF_L} ${OBJS} ${OBJS_R}
-			@echo "    ${NAME}"
 			@${CC} ${FLAGS} ${OBJS} ${OBJS_R} ${LIBFT_L} ${FPRNF_L} -o ${NAME} ${OPTS}
 
 clrbns:
@@ -111,7 +115,6 @@ fclean:		clean
 
 bonus:		BNS = 1
 bonus:		clrman ${LIBFT_L} ${FPRNF_L} ${OBJS} ${OBJS_R} ${OBJS_B}
-			@echo "    ${NAME}"
 			@${CC} ${FLAGS} ${OBJS} ${OBJS_R} ${OBJS_B} ${LIBFT_L} ${FPRNF_L} \
 				-o ${NAME} ${OPTS}
 

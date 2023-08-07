@@ -48,12 +48,12 @@ int	interpolation_length(int **n, char *str, t_list *vars)
 
 	if (str[*n[0]] == '~')
 		return (ft_strlen(var_value("HOME", vars)));
-	if ((str[*n[0] + 1] == '"' || str[*n[0] + 1] == '\'')  && *n[1] == DEFAULT)
+	if ((str[*n[0] + 1] == '"' || str[*n[0] + 1] == '\'') && *n[1] == DEFAULT)
 		return (0);
 	if (!ft_isalnum(str[*n[0] + 1]) && str[*n[0] + 1] != '?'
 		&& str[*n[0] + 1] != '_' && str[*n[0] + 1] != '*')
 		return (1);
-	if (ft_isdigit(str[*n[0] + 1]) || str[*n[0] + 1] == '*' 
+	if (ft_isdigit(str[*n[0] + 1]) || str[*n[0] + 1] == '*'
 		|| str[*n[0] + 1] == '?')
 		return ((str[++(*n[0])] == '?') * n_digit(g_errno));
 	val = var_value(&str[*n[0] + 1], vars);

@@ -14,6 +14,7 @@
 # define PARSER_H
 
 # include "builtins.h"
+# include "interpret.h"
 
 # include <stdio.h>
 # include <fcntl.h>
@@ -31,10 +32,6 @@ int		unit(t_list **tokens, t_ast **node);
 int		factor(t_list **tokens, t_ast **node);
 int		term(t_list **tokens, t_ast **node);
 int		expr(t_list **tokens, t_ast **node);
-
-int		execute_cmd(t_list **vars, t_cmd *cmd);
-int		evaluate_expr(t_ast *ast, t_list **vars, t_cmd *cmd, int valid);
-int		interpret_ast(t_ast *ast, t_list **vars, t_cmd *cmd, int valid);
 
 int		get_heredoc(t_token *token, char *prompt, t_list *vars);
 void	get_cmd_path(char *cmd, char *path, t_list *vars);
