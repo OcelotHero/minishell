@@ -17,6 +17,7 @@
 # include "types.h"
 # include "parser.h"
 # include "ft_dprintf.h"
+# include "parser.h"
 
 # include <termios.h>
 
