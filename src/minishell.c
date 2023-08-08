@@ -157,6 +157,35 @@ int	setup_env_vars(t_list **vars, char **envs)
 
 	while (*envs)
 	{
+		str = ft_strdup(*(envs++));
+		node = ft_lstnew(str);
+		if (!str || !node)
+		{
+			if (str)
+				free(str);
+			return (error_msg(errno, E_MLOC, strerror(errno)));
+		}
+		ft_lstadd_front(vars, node);
+	}
+	str = getcwd(buf, BUFSIZ);
+	if (builtin_unset((char *[]){"unset", "OLDPWD", NULL}, vars) || !str)
+		return (error_msg(errno, E_PWDV, strerror(errno)));
+	str = ft_strjoin("PWD=", str);
+	if (!str)
+		return (error_msg(errno, E_MLOC, strerror(errno)));
+	builtin_export((char *[]){"export", str, NULL}, vars);
+	free(str);
+	return (0);
+}
+
+int	setup_env_vars(t_list **vars, char **envs)
+{
+	char	*str;
+	char	buf[BUFSIZ];
+	t_list	*node;
+
+	while (*envs)
+	{
 		str = ft_strdup((*envs)++);
 		node = ft_lstnew(str);
 		if (!str || !node)
@@ -189,6 +218,7 @@ int	main(int narg, char **args, char **envs)
 	vars = NULL;
 	line = (char *[]){"", NULL};
 
+	setup_env_vars(&vars, envs);
 	if (narg == 3)
 	{
 		line[0] = ft_strrchr(args[2], '\n');
