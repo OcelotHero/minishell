@@ -36,8 +36,6 @@ int	cd_arg_handler(char **opts, t_list **vars)
 		return (error_msg(1, E_CHDR, opts[1], strerror(errno)));
 	if ((!opts[1] || !ft_strcmp(opts[1], "--")) && !var_value("HOME", *vars))
 		return (error_msg(1, E_CDNS, "HOME"));
-	// if (opts[2])
-	// 	return (error_msg(1, E_CDAG));
 	return (0);
 }
 
