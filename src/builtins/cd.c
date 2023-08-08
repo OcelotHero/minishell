@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rraharja <rraharja@student.42heilbronn.de> +#+  +:+       +#+        */
+/*   By: snagulap <snagulap@student.42heilbronn. 	+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/07/13 03:40:27 by rraharja          #+#    #+#             */
-/*   Updated: 2023/07/13 03:40:27 by rraharja         ###   ########.fr       */
+/*   Created: 2023/07/13 03:40:27 by snagulap          #+#    #+#             */
+/*   Updated: 2023/07/13 03:40:27 by snagulap         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ int	cd_arg_handler(char **opts, t_list **var_list)
 	if (!opts[1] && var_value("HOME", *var_list)
 		&& chdir(var_value("HOME", *var_list)))
 		return (error_msg(1, E_CHDR, var_value("HOME", *var_list),
-			strerror(errno)));
+				strerror(errno)));
 	if (!opts[1] && !var_value("HOME", *var_list))
 		return (error_msg(1, E_CDNS, "HOME"));
 	return (0);

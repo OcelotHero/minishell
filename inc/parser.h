@@ -15,6 +15,8 @@
 
 # include "builtins.h"
 # include "interpret.h"
+# include "get_next_line.h"
+# include "utils.h"
 
 # include <stdio.h>
 # include <fcntl.h>

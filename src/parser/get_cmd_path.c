@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_cmd_path.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: snagulap <snagulap@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/17 18:22:23 by rraharja          #+#    #+#             */
-/*   Updated: 2023/07/17 18:18:24 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/08/08 11:51:22 by snagulap         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 

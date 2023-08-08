@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rraharja <rraharja@student.42heilbronn.de> +#+  +:+       +#+        */
+/*   By: snagulap <snagulap@student.42heilbronn.	+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/07/13 04:07:02 by rraharja          #+#    #+#             */
-/*   Updated: 2023/07/13 04:07:02 by rraharja         ###   ########.fr       */
+/*   Created: 2023/07/13 04:07:02 by snagulap          #+#    #+#             */
+/*   Updated: 2023/07/13 04:07:02 by snagulap         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
