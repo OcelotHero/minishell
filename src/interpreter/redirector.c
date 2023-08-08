@@ -65,7 +65,8 @@ int	parse_expr(t_list *node, t_list **vars, t_cmd *cmd)
 	while (!error && !(((t_token *)node->content)->type
 			& (LPAREN | RPAREN | OR | SEMI | OR_IF | AND_IF | END)))
 	{
-		if (((t_token *)node->content)->type & (CMD | OPTS1 | OPTS2 | ARGS))
+		if (((t_token *)node->content)->type & (CMD | OPTS1 | OPTS2 | ARGS)
+				&& i < (MAXOPTS - 1))
 			cmd->opts[i++] = ((t_token *)node->content)->data;
 		if ((((t_token *)node->content)->type & (CMD | BUILTIN)) == CMD)
 			get_cmd_path(cmd->opts[0], cmd->path, *vars);
