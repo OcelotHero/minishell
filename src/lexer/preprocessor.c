@@ -28,30 +28,29 @@ static int	is_escaped(int *i, char *wrd, int state)
 int	data_length(char *wrd, int *n, t_list *vars)
 {
 	int	i;
-	int	count;
-	int	s;
+	int	*s;
 
 	i = -1;
-	count = 0;
-	s = DEFAULT;
+	s = (int []){DEFAULT, 0};
 	while (wrd[++i] && i < n[0])
 	{
-		if (n[1] != DLESS && ((s != SQUOTE && wrd[i] == '$') || (s == DEFAULT
-					&& wrd[i] == '~' && (!wrd[i + 1] || wrd[i + 1] == '/'))))
-			count += interpolation_length((int *[]){&i, &s}, wrd, vars);
+		if (n[1] != DLESS && ((s[0] != SQUOTE && wrd[i] == '$')
+				|| ((!wrd[i + 1] || wrd[i + 1] == '/' || wrd[i + 1] == ' ')
+					&& s[0] == DEFAULT && wrd[i] == '~')))
+			s[1] += interpolation_length((int *[]){&i, &s[0]}, wrd, vars);
 		else
 		{
-			if (is_escaped(&i, wrd, s))
-				count++;
-			else if ((s == SQUOTE && wrd[i] == '\'')
-				|| (s == DQUOTE && wrd[i] == '"'))
-				s = DEFAULT;
-			else if (s == DEFAULT && (wrd[i] == '\'' || wrd[i] == '"'))
-				s = (wrd[i] != '"') * SQUOTE + (wrd[i] == '"') * DQUOTE;
-			count++;
+			if (is_escaped(&i, wrd, s[0]))
+				(s[1])++;
+			else if ((s[0] == SQUOTE && wrd[i] == '\'')
+				|| (s[0] == DQUOTE && wrd[i] == '"'))
+				s[0] = DEFAULT;
+			else if (s[0] == DEFAULT && (wrd[i] == '\'' || wrd[i] == '"'))
+				s[0] = (wrd[i] != '"') * SQUOTE + (wrd[i] == '"') * DQUOTE;
+			(s[1])++;
 		}
 	}
-	return (count);
+	return (s[1]);
 }
 
 int	populate_data(char *wrd, int *n, char *data, t_list *vars)
@@ -63,8 +62,9 @@ int	populate_data(char *wrd, int *n, char *data, t_list *vars)
 	{
 		if (s[1] == DEFAULT && wrd[*s] == '*' && n[1] != DLESS)
 			s[2] |= WILD;
-		if (((!s[1] && wrd[*s] == '~' && (!wrd[*s + 1] || wrd[*s + 1] == '/'))
-				|| (s[1] != SQUOTE && wrd[*s] == '$')) && n[1] != DLESS)
+		if ((((!wrd[*s + 1] || wrd[*s + 1] == '/' || wrd[*s + 1] == ' ')
+					&& wrd[*s] == '~' && !s[1]) || (s[1] != SQUOTE
+					&& wrd[*s] == '$')) && n[1] != DLESS)
 			s[2] |= interpolate_var((int *[]){&(*s), &s[1]}, wrd, vars, &data);
 		else
 		{

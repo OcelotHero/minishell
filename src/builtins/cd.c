@@ -28,13 +28,13 @@ int	cd_arg_handler(char **opts, t_list **vars)
 			return (error_msg(1, E_CDNS, "OLDPWD"));
 		ft_dprintf(1, "%s\n", opts[1]);
 	}
-	if (opts[1] && chdir(opts[1]))
-		return (error_msg(1, E_CHDR, opts[1], strerror(errno)));
-	if (!opts[1] && var_value("HOME", *vars)
+	if ((!opts[1] || !ft_strcmp(opts[1], "--")) && var_value("HOME", *vars)
 		&& chdir(var_value("HOME", *vars)))
 		return (error_msg(1, E_CHDR, var_value("HOME", *vars),
 				strerror(errno)));
-	if (!opts[1] && !var_value("HOME", *vars))
+	if (opts[1] && ft_strcmp(opts[1], "--") && chdir(opts[1]))
+		return (error_msg(1, E_CHDR, opts[1], strerror(errno)));
+	if ((!opts[1] || !ft_strcmp(opts[1], "--")) && !var_value("HOME", *vars))
 		return (error_msg(1, E_CDNS, "HOME"));
 	return (0);
 }

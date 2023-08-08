@@ -77,10 +77,10 @@ int	interpolation_value(int **n, char *str, t_list *vars, char **data)
 
 	val = var_value("HOME", vars);
 	if (str[*n[0]] != '~')
-		val = var_value(&str[*n[0]+ 1], vars);
+		val = var_value(&str[*n[0] + 1], vars);
 	while (ft_isalnum(str[*n[0] + 1]) || str[*n[0] + 1] == '_')
 		if (str[(*n[0])++] == '~')
-			break;
+			break ;
 	if (!val)
 		return (0);
 	type = WORD;

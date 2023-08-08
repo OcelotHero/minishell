@@ -5,7 +5,7 @@ SRC_PAR	= ast parser get_cmd_path get_heredoc
 SRC_LEX = interpolator preprocessor postprocessor
 SRC_SGN = handler
 SRC_UTL = utils auxilary
-SRC_ENT = minishell
+SRC_ENT = minishell main
 SRC_INT = interpreter executables redirector
 
 # Bonus source files
