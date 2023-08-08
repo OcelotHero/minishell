@@ -110,6 +110,6 @@ int	exec(t_list **vars, t_cmd *cmd)
 	if (cmd->path[0] && stat(cmd->path, &sstruct))
 		return (error_msg(errno, E_STAT, strerror(errno)));
 	if (cmd->path[0] && S_ISDIR(sstruct.st_mode))
-		return (error_msg(errno, E_DIRS, cmd->opts[0]));
+		return (error_msg(126, E_DIRS, cmd->opts[0]));
 	return (execute_cmd(vars, cmd));
 }

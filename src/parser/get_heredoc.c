@@ -98,16 +98,16 @@ int	get_heredoc(t_token *token, char *prompt, t_list *vars)
 		return (error_msg(errno, E_FILE, ".tmp", strerror(errno)));
 	while (1)
 	{
-		line = readline(prompt);
-		// if (isatty(fileno(stdin)))
-		// 	line = readline(prompt);
-		// else
-		// {
-		// 	char *ln;
-		// 	ln = get_next_line(fileno(stdin));
-		// 	line = ft_strtrim(ln, "\n");
-		// 	free(ln);
-		// }
+		// line = readline(prompt);
+		if (isatty(fileno(stdin)))
+			line = readline(prompt);
+		else
+		{
+			char *ln;
+			ln = get_next_line(fileno(stdin));
+			line = ft_strtrim(ln, "\n");
+			free(ln);
+		}
 		if (process_line(fd, token, line, vars))
 			break ;
 	}

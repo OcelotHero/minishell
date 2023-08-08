@@ -134,7 +134,7 @@ int	tokenize(t_list **tokens, char *str, t_list *vars)
 			s = (str[n[0]] != '"') * SQUOTE + (str[n[0]] == '"') * DQUOTE;
 		else if ((s == DEFAULT || !str[n[0]])
 			&& tokenize_line(tokens, n, str, vars))
-			return (1);
+			return (error_msg(errno, E_MLOC, strerror(errno)));
 	}
 	if (s != DEFAULT)
 		error_msg(1, E_QUOT, (s == SQUOTE) * '\'' + (s != SQUOTE) * '"');

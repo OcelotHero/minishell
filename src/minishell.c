@@ -61,81 +61,82 @@ static int	semi_syntax_handler(char *line)
 	return ((*line == '\\' && !(*(line + 1))) || *line);
 }
 
-static int	process(char *line, t_list **vars, char **envs)
+int	p(char *line, t_list **tokens, t_cmd *cmd, t_list **vars)
 {
-	int		i;
-	int		stop;
-	int		state;
 	int		res;
-	int		ret;
-	char	c;
-	char	*sep;
 	char	*tkn;
-	t_cmd	cmd;
 	t_ast	*ast;
 	t_list	*tmp;
+
+	if (tokenize(tokens, line, *vars) || postprocess(*tokens) || trim(tokens))
+		return (1);
+	res = 1;
+	ast = NULL;
+	tmp = *tokens;
+	if (((t_token *)tmp->content)->type == END)
+		return (res);
+	res = expr(&tmp, &ast);
+	if (res == 1)
+		error_msg(errno, E_MLOC, strerror(errno));
+	res += 2 * (!res && (((t_token *)tmp->content)->type & ~(END | OR)));
+	tkn = token_str(((t_token *)tmp->content)->type);
+	if (!(*tkn))
+		tkn = ((t_token *)tmp->content)->data;
+	if (res == 2)
+		error_msg(2, E_SYTX, tkn);
+	if (ast && res != 1)
+		res = interpret_ast(ast, vars, cmd, res == 0);
+	ast_clear(&ast, NULL);
+	return (res);
+}
+
+char	*pr(char *line)
+{
+	int	i;
+	int	state;
+
+	i = -1;
+	state = DEFAULT;
+	while (line[++i] && (line[i] != ';' || state != DEFAULT))
+	{
+		if (state != SQUOTE && line[i] == '\\')
+			i++;
+		else if ((line[i] == '\'' && state == SQUOTE)
+			|| (line[i] == '"' && state == DQUOTE))
+			state = DEFAULT;
+		else if ((line[i] == '\'' || line[i] == '"') && state == DEFAULT)
+			state = (line[i] != '"') * SQUOTE + (line[i] == '"') * DQUOTE;
+	}
+	return (&line[i - !line[i]]);
+}
+
+static int	process(char *line, t_list **vars, char **envs)
+{
+	int		n[3];
+	char	*sep;
+	t_cmd	cmd;
 	t_list	*tokens;
 
-	ast = NULL;
+	n[0] = 0;
 	tokens = NULL;
 	cmd = (t_cmd){1, {0, 0, 0}, 0, "", NULL, .envs = envs, NULL};
-	stop = 0;
-	while (*line && cmd.pid && !stop)
+	while (*line && cmd.pid && !n[0])
 	{
-		i = -1;
-		state = DEFAULT;
-		while (line[++i] && (line[i] != ';' || state != DEFAULT))
-		{
-			if (state != SQUOTE && line[i] == '\\')
-				i++;
-			else if ((line[i] == '\'' && state == SQUOTE)
-				|| (line[i] == '"' && state == DQUOTE))
-				state = DEFAULT;
-			else if ((line[i] == '\'' || line[i] == '"') && state == DEFAULT)
-				state = (line[i] != '"') * SQUOTE + (line[i] == '"') * DQUOTE;
-		}
-		sep = &line[i - !line[i]];
-		c = *(sep + 1);
-		*(sep + 1) = '\0';
-		ret = 1;
-		if (!tokenize(&tokens, line, *vars))
-		{
-			postprocess_tokens(tokens);
-			trim_tokens(&tokens);
-			trim_parenthesis_token(&tokens, 0);
-			tmp = tokens;
-			if (((t_token *)tmp->content)->type != END)
-			{
-				res = expr(&tmp, &ast);
-				g_errno = res;
-				tkn = token_str(((t_token *)tmp->content)->type);
-				if (!(*tkn))
-					tkn = "newline";
-				if (res == 2)
-					ft_dprintf(2, E_SYTX, tkn);
-				if (ast && res != 1)
-					ret = interpret_ast(ast, vars, &cmd, res == 0);
-				ast_clear(&ast, NULL);
-			}
-			if (cmd.pid && !access(".tmp", F_OK))
-				unlink(".tmp");
-		}
-		if (cmd.opts[0] && ft_strcmp(cmd.opts[0], "exit"))
-			g_errno *= ret;
-		else if (cmd.opts[0] && !ft_strcmp(cmd.opts[0], "exit"))
-		{
-			if (!ret)
-				stop = 1;
-			else
-				g_errno *= ret;
-		}
+		sep = pr(line);
+		n[2] = *(sep + 1);
+		*(sep + 1) = '\0'; 
+		n[1] = p(line, &tokens, &cmd, vars);
+		if (cmd.pid && !access(".tmp", F_OK))
+			unlink(".tmp");
+		if (cmd.opts[0] && (ft_strcmp(cmd.opts[0], "exit") || n[1]))
+			g_errno *= n[1];
+		else if (cmd.opts[0] && !ft_strcmp(cmd.opts[0], "exit") && !n[1])
+			n[0] = 1;
 		ft_lstclear(&tokens, clear);
-		*(sep + 1) = c;
+		*(sep + 1) = n[2];
 		line = sep + 1;
-		if (res)
-			g_errno = res;
 	}
-	return (cmd.pid <= 0 || stop);
+	return (cmd.pid <= 0 || n[0]);
 }
 
 void	setup_termios(struct termios *termios)
@@ -148,11 +149,38 @@ void	setup_termios(struct termios *termios)
 	tcsetattr(STDOUT_FILENO, TCSAFLUSH, &new_termios);
 }
 
+int	setup_env_vars(t_list **vars, char **envs)
+{
+	char	*str;
+	char	buf[BUFSIZ];
+	t_list	*node;
+
+	while (*envs)
+	{
+		str = ft_strdup((*envs)++);
+		node = ft_lstnew(str);
+		if (!str || !node)
+		{
+			if (str)
+				free(str);
+			return (error_msg(errno, E_MLOC, strerror(errno)));
+		}
+		ft_lstadd_front(vars, node);
+	}
+	str = getcwd(buf, BUFSIZ);
+	if (builtin_unset((char *[]){"unset", "OLDPWD", NULL}, vars) || !str)
+		return (error_msg(errno, E_PWDV, strerror(errno)));
+	str = ft_strjoin("PWD=", str);
+	if (!str)
+		return (error_msg(errno, E_MLOC, strerror(errno)));
+	builtin_export((char *[]){"export", str, NULL}, vars);
+	free(str);
+	return (0);
+}
+
 int	main(int narg, char **args, char **envs)
 {
 	int				res;
-	int				i;
-	char			buf[BUFSIZ];
 	char			*dir;
 	char			**line;
 	t_list			*vars;
@@ -160,20 +188,6 @@ int	main(int narg, char **args, char **envs)
 
 	vars = NULL;
 	line = (char *[]){"", NULL};
-	i = 0;
-	while (envs[i])
-		ft_lstadd_front(&vars, ft_lstnew(ft_strdup(envs[i++])));
-	char	*s;
-
-	dir = getcwd(buf, BUFSIZ);
-	s = ft_strjoin("PWD=", dir);
-	builtin_export((char *[]){"export", s, NULL}, &vars);
-	free(s);
-	// s = ft_strjoin("SHLVL=", ft_itoa(ft_atoi(var_value("SHLVL", vars)) + 1));
-	// builtin_export((char *[]){"export", s, NULL}, &vars);
-	// free(s);
-	builtin_unset((char *[]){"unset", "OLDPWD", NULL}, &vars);
-
 
 	if (narg == 3)
 	{

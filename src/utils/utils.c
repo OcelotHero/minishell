@@ -35,8 +35,6 @@ char	*var_value(char *key, t_list *var_list)
 
 int	token_type(char *str)
 {
-	// if ((*str == '\t' || *str == ' '))
-	// 	return (SPACES);
 	if ((*str == '\t' || *str == '\n' || *str == ' '))
 		return (SPACES);
 	if (*str == '(')
@@ -86,6 +84,8 @@ char	*token_str(int type)
 		return ("&");
 	if (type == AND_IF)
 		return ("&&");
+	if (type == END)
+		return ("newline");
 	return ("");
 }
 

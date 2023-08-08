@@ -12,7 +12,7 @@
 
 #include "lexer.h"
 
-int	trim_tokens(t_list **tokens)
+int	trim_blank_tokens(t_list **tokens)
 {
 	t_list	*node;
 	t_token	*token;
@@ -28,11 +28,11 @@ int	trim_tokens(t_list **tokens)
 		free(token->data);
 		free(token);
 		free(node);
-		return (trim_tokens(tokens));
+		return (trim_blank_tokens(tokens));
 	}
 	if (BONUS && (token->type & WILD) && expand_wildcard(node))
 		return (1);
-	return (trim_tokens(&(node->next)));
+	return (trim_blank_tokens(&(node->next)));
 }
 
 int	trim_parenthesis_token(t_list **tokens, int ptype)
@@ -44,7 +44,7 @@ int	trim_parenthesis_token(t_list **tokens, int ptype)
 		return (0);
 	node = *tokens;
 	type = ((t_token *)node->content)->type;
-	if (ptype && !(type & (OR_IF | AND_IF)))
+	if (ptype && ((ptype & RPAREN) || !(type & (OR_IF | AND_IF))))
 	{
 		if (type & ptype)
 		{
@@ -61,4 +61,9 @@ int	trim_parenthesis_token(t_list **tokens, int ptype)
 	if (((t_token *)node->content)->type & (LPAREN | OR))
 		trim_parenthesis_token(&(node->next), LPAREN);
 	return trim_parenthesis_token(&(node->next), 0);
+}
+
+int	trim(t_list **tokens)
+{
+	return (trim_blank_tokens(tokens) || trim_parenthesis_token(tokens, 0));
 }

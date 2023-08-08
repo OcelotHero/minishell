@@ -16,7 +16,7 @@ int	consume_token(t_list **tokens, int type)
 {
 	int	state;
 
-	if (type & (LPAREN | OR | SEMI | OR_IF | AND_IF))
+	if (type & (LPAREN | RPAREN | OR | SEMI | OR_IF | AND_IF))
 	{
 		*tokens = (*tokens)->next;
 		return (0);

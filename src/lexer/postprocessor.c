@@ -93,7 +93,7 @@ int	split_token(t_list **tokens, char *wrd, int n)
 	return (append_token(tokens, node, data, quot));
 }
 
-int	postprocess(t_list **tokens, int *n, char *wrd)
+int	postprocess_token(t_list **tokens, int *n, char *wrd)
 {
 	int		type;
 	t_token	*token;
@@ -114,7 +114,7 @@ int	postprocess(t_list **tokens, int *n, char *wrd)
 	return (0);
 }
 
-int	postprocess_tokens(t_list *tokens)
+int	postprocess(t_list *tokens)
 {
 	int		*n;
 	char	*s;
@@ -134,8 +134,8 @@ int	postprocess_tokens(t_list *tokens)
 					n[3] = DEFAULT;
 				else if ((s[*n] == '\'' || s[*n] == '"') && n[3] == DEFAULT)
 					n[3] = (s[*n] != '"') * SQUOTE + (s[*n] == '"') * DQUOTE;
-				else if (n[3] == DEFAULT && postprocess(&tokens, n, s))
-					return (1);
+				else if (n[3] == DEFAULT && postprocess_token(&tokens, n, s))
+					return (error_msg(errno, E_MLOC, strerror(errno)));
 			}
 		}
 		tokens = tokens->next;
