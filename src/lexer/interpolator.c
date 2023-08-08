@@ -46,7 +46,7 @@ int	interpolation_length(int **n, char *str, t_list *vars)
 	int			count;
 	char		*val;
 
-	if (str[*n[0]] == '~')
+	if (str[*n[0]] == '~' && var_value("HOME", vars))
 		return (ft_strlen(var_value("HOME", vars)));
 	if ((str[*n[0] + 1] == '"' || str[*n[0] + 1] == '\'') && *n[1] == DEFAULT)
 		return (0);
@@ -100,7 +100,7 @@ int	interpolate_var(int **n, char *str, t_list *vars, char **data)
 {
 	int		error;
 
-	if (str[*n[0]] == '~')
+	if (str[*n[0]] == '~' && var_value("HOME", vars))
 		return (interpolation_value(n, str, vars, data));
 	if ((str[*n[0] + 1] == '"' || str[*n[0] + 1] == '\'') && *n[1] == DEFAULT)
 		return (0);

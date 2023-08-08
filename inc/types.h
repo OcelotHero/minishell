@@ -35,6 +35,7 @@
 # define E_UNST	"minishell: unset: `%s': not a valid identifier\n"
 # define E_CHDR "minishell: cd: %s: %s\n"
 # define E_CDAG "minishell: cd: too many arguments\n"
+# define E_CDNS "minishell: cd: %s not set\n"
 # define E_PWDA "minishell: pwd: too many arguments\n"
 # define E_PWDV "minishell: pwd: %s\n"
 # define E_ENVA "minishell: env: `%s': No such file or directory\n"

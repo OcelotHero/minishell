@@ -71,8 +71,9 @@ void	int_handler(int signo)
 {
 	char	end;
 
+	(void) signo;
 	end = '\x03';
-	errno = signo;
+	errno = 1;
 	write(1, "\n", 1);
 	rl_on_new_line();
 	rl_replace_line(&end, 0);

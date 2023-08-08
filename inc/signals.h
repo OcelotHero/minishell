@@ -13,6 +13,9 @@
 #ifndef SIGNALS_H
 # define SIGNALS_H
 
+# include "libft.h"
+# include "types.h"
+
 # include <stdio.h>
 # include <signal.h>
 # include <unistd.h>

@@ -12,7 +12,7 @@
 
 #include "signals.h"
 
-void	reset_action(int signo)
+void	reset_handler(int signo)
 {
 	(void) signo;
 	write(1, "\n", 1);
@@ -24,5 +24,5 @@ void	reset_action(int signo)
 void	setup_signals(void)
 {
 	signal(SIGQUIT, SIG_IGN);
-	signal(SIGINT, &reset_action);
+	signal(SIGINT, reset_handler);
 }

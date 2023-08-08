@@ -102,6 +102,7 @@ static int	process(char *line, t_list **vars, char **envs)
 		{
 			postprocess_tokens(tokens);
 			trim_tokens(&tokens);
+			trim_parenthesis_token(&tokens, 0);
 			tmp = tokens;
 			if (((t_token *)tmp->content)->type != END)
 			{
@@ -162,6 +163,18 @@ int	main(int narg, char **args, char **envs)
 	i = 0;
 	while (envs[i])
 		ft_lstadd_front(&vars, ft_lstnew(ft_strdup(envs[i++])));
+	char	*s;
+
+	dir = getcwd(buf, BUFSIZ);
+	s = ft_strjoin("PWD=", dir);
+	builtin_export((char *[]){"export", s, NULL}, &vars);
+	free(s);
+	// s = ft_strjoin("SHLVL=", ft_itoa(ft_atoi(var_value("SHLVL", vars)) + 1));
+	// builtin_export((char *[]){"export", s, NULL}, &vars);
+	// free(s);
+	builtin_unset((char *[]){"unset", "OLDPWD", NULL}, &vars);
+
+
 	if (narg == 3)
 	{
 		line[0] = ft_strrchr(args[2], '\n');

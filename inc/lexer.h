@@ -33,6 +33,7 @@ int		postprocess(t_list **tokens, int *n, char *wrd);
 int		postprocess_tokens(t_list *tokens);
 
 int		trim_tokens(t_list **tokens);
+int		trim_parenthesis_token(t_list **tokens, int ptype);
 
 int		data_length(char *wrd, int *n, t_list *vars);
 int		populate_data(char *wrd, int *n, char *data, t_list *vars);

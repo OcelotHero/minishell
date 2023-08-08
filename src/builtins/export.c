@@ -26,6 +26,8 @@ static int	export_new(t_list **var_list, char **arg, int n)
 		var = ft_strjoin(*arg, &(*arg)[n + 1]);
 		(*arg)[n] = '+';
 	}
+	else if (!(*arg)[n])
+		var = ft_strjoin(*arg, "=");
 	else
 		var = ft_strdup(*arg);
 	if (!var)
@@ -111,10 +113,9 @@ int	builtin_export(char **opts, t_list **var_list)
 			while (opts[i][j] && opts[i][j] != '='
 				&& (ft_isalnum(opts[i][j]) || opts[i][j] == '_'))
 				j++;
-		if (opts[i][j] && opts[i][j] != '=' && ft_strncmp(&opts[i][j], "+=", 2)
-			|| !j)
+		if (opts[i][j] != '=' && ft_strncmp(&opts[i][j], "+=", 2) && opts[i][j])
 			error |= error_msg(1, E_EXPO, opts[i]);
-		if (!error && opts[i][j] && export_var(var_list, &opts[i], j))
+		if (!error && export_var(var_list, &opts[i], j))
 			return (error_msg(errno, E_MLOC, strerror(errno)));
 	}
 	return (error || (i == 1 && print_env(var_list)));
