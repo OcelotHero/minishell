@@ -78,7 +78,15 @@ int	setup_env_vars(t_list **vars, char **envs)
 	char	buf[BUFSIZ];
 	t_list	*node;
 
+<<<<<<< HEAD
 	while (*envs)
+=======
+	ast = NULL;
+	tokens = NULL;
+	cmd = (t_cmd){1, {0, 0, 0}, 0, "", {NULL}, .envs = envs, NULL};
+	stop = 0;
+	while (*line && cmd.pid && !stop)
+>>>>>>> 97468d3b508126543b10eec73f7b4f912ed7f22f
 	{
 		str = ft_strdup(*(envs++));
 		node = ft_lstnew(str);
