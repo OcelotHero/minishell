@@ -20,7 +20,7 @@ int	main(int narg, char **args, char **envs)
 	vars = NULL;
 	if (setup_env_vars(&vars, envs))
 		return (error_msg(errno, E_MLOC, strerror(errno)));
-	if (narg == 3 && ft_strcmp(args[1], "-c"))
+	if (narg == 3 && !ft_strcmp(args[1], "-c"))
 		ret = minishell_non_interactive(args, &vars, envs);
 	else
 		ret = minishell_interactive(&vars, envs);
