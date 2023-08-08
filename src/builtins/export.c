@@ -113,7 +113,8 @@ int	builtin_export(char **opts, t_list **var_list)
 			while (opts[i][j] && opts[i][j] != '='
 				&& (ft_isalnum(opts[i][j]) || opts[i][j] == '_'))
 				j++;
-		if (opts[i][j] != '=' && ft_strncmp(&opts[i][j], "+=", 2) && opts[i][j])
+		if (opts[i][j] != '=' && ft_strncmp(&opts[i][j], "+=", 2) && opts[i][j]
+			|| !j)
 			error |= error_msg(1, E_EXPO, opts[i]);
 		if (!error && export_var(var_list, &opts[i], j))
 			return (error_msg(errno, E_MLOC, strerror(errno)));

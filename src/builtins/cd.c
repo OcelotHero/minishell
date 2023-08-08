@@ -14,13 +14,12 @@
 
 int	cd_arg_handler(char **opts, t_list **var_list)
 {
-	if (opts[2])
-		return (error_msg(1, E_CDAG));
 	if (opts[1] && opts[1][0] == '-' && !opts[1][1])
 	{
 		opts[1] = var_value("OLDPWD", *var_list);
 		if (!opts[1])
 			return (error_msg(1, E_CDNS, "OLDPWD"));
+		ft_dprintf(1, "%s\n", opts[1]);
 	}
 	if (opts[1] && chdir(opts[1]))
 		return (error_msg(1, E_CHDR, opts[1], strerror(errno)));
@@ -30,6 +29,8 @@ int	cd_arg_handler(char **opts, t_list **var_list)
 				strerror(errno)));
 	if (!opts[1] && !var_value("HOME", *var_list))
 		return (error_msg(1, E_CDNS, "HOME"));
+	// if (opts[2])
+	// 	return (error_msg(1, E_CDAG));
 	return (0);
 }
 
