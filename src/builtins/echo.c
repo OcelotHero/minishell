@@ -12,13 +12,19 @@
 
 #include "builtins.h"
 
-int	builtin_echo(char **opts, t_list **var_list)
+/**
+ * 
+ * @param	opts		options -- echo $?, $HOME ...
+ * @param	vars		Shell environment variables
+ * @return 				returns 0 
+ */
+int	builtin_echo(char **opts, t_list **vars)
 {
 	int	i;
 	int	j;
 	int	flag;
 
-	(void) var_list;
+	(void) vars;
 	i = 0;
 	flag = (!ft_strcmp(opts[0], "echo")) << 2;
 	while (opts[++i])

@@ -60,7 +60,7 @@ int	trim_parenthesis_token(t_list **tokens, int ptype)
 	}
 	if (((t_token *)node->content)->type & (LPAREN | OR))
 		trim_parenthesis_token(&(node->next), LPAREN);
-	return trim_parenthesis_token(&(node->next), 0);
+	return (trim_parenthesis_token(&(node->next), 0));
 }
 
 int	trim(t_list **tokens)

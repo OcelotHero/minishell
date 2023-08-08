@@ -12,7 +12,7 @@
 
 #include "lexer.h"
 
-static int	is_escaped(int *i, char *wrd, int state, int type)
+static int	is_escaped(int *i, char *wrd, int state)
 {
 	int	res;
 
@@ -41,7 +41,7 @@ int	data_length(char *wrd, int *n, t_list *vars)
 			count += interpolation_length((int *[]){&i, &s}, wrd, vars);
 		else
 		{
-			if (is_escaped(&i, wrd, s, n[1]))
+			if (is_escaped(&i, wrd, s))
 				count++;
 			else if ((s == SQUOTE && wrd[i] == '\'')
 				|| (s == DQUOTE && wrd[i] == '"'))
@@ -68,7 +68,7 @@ int	populate_data(char *wrd, int *n, char *data, t_list *vars)
 			s[2] |= interpolate_var((int *[]){&(*s), &s[1]}, wrd, vars, &data);
 		else
 		{
-			if (is_escaped(s, wrd, s[1], n[1]))
+			if (is_escaped(s, wrd, s[1]))
 				*(data++) = '\\';
 			else if ((s[1] == SQUOTE && wrd[*s] == '\'')
 				|| (s[1] == DQUOTE && wrd[*s] == '"'))

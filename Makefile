@@ -62,7 +62,7 @@ VPATH	+= %.c $(addprefix $(SRC_DIR)/, $(BLTIN_D) $(PARSR_D) $(INTER_D) \
 			$(LEXER_D) $(SIGNL_D) $(UTILS_D))
 
 CC		= cc
-FLAGS	= -g -O0 -MD # -Wall -Wextra -Werror
+FLAGS	= -g -O0 -MD -Wall -Wextra -Werror
 RM		= rm -rf
 
 OSNAME	= $(shell uname -s)

@@ -12,10 +12,17 @@
 
 #include "builtins.h"
 
-int	builtin_exit(char **opts, t_list **var_list)
+/**
+ * 
+ * @param	opts		options -- exit
+ * @param	vars	Shell environment variables
+ * @return 				returns error number if fails, otherwise returns 0 
+ */
+int	builtin_exit(char **opts, t_list **vars)
 {
 	int	i;
 
+	(void )vars;
 	if (!opts[1])
 		return (g_errno);
 	i = -1;

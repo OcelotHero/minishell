@@ -87,7 +87,6 @@ int	execute_cmd(t_list **vars, t_cmd *cmd)
 
 int	exec(t_list **vars, t_cmd *cmd)
 {
-	char		*s;
 	struct stat	sstruct;
 
 	if (cmd->fd[2] && (close(cmd->fd[2]) || 1))
@@ -96,8 +95,8 @@ int	exec(t_list **vars, t_cmd *cmd)
 		return (1);
 	if (((cmd->fd[0] && dup2(cmd->fd[0], STDIN_FILENO) < 0)
 			|| (cmd->fd[1] && dup2(cmd->fd[1], STDOUT_FILENO) < 0))
-		&& (cmd->fd[0] && close(cmd->fd[0]) || 1)
-		&& (cmd->fd[1] && close(cmd->fd[1]) || 1))
+		&& ((cmd->fd[0] && close(cmd->fd[0])) || 1)
+		&& ((cmd->fd[1] && close(cmd->fd[1])) || 1))
 		return (error_msg(errno, E_DUP2, strerror(errno)));
 	if (cmd->fd[0] && (close(cmd->fd[0]) || 1))
 		cmd->fd[0] = 0;

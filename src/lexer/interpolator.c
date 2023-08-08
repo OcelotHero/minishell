@@ -98,8 +98,6 @@ int	interpolation_value(int **n, char *str, t_list *vars, char **data)
 
 int	interpolate_var(int **n, char *str, t_list *vars, char **data)
 {
-	int		error;
-
 	if (str[*n[0]] == '~' && var_value("HOME", vars))
 		return (interpolation_value(n, str, vars, data));
 	if ((str[*n[0] + 1] == '"' || str[*n[0] + 1] == '\'') && *n[1] == DEFAULT)

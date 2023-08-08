@@ -17,7 +17,13 @@ static int	comp_var(const char *s1, const char *s2)
 	return (ft_strncmp(s1, s2, ft_strlen(s2) + 1) != '=');
 }
 
-int	builtin_unset(char **opts, t_list **var_list)
+/**
+ * 
+ * @param	opts		options -- UNSET deletes env variable from env list
+ * @param	vars		Shell environment variables
+ * @return 				returns error number.
+ */
+int	builtin_unset(char **opts, t_list **vars)
 {
 	int	i;
 	int	j;
@@ -35,7 +41,7 @@ int	builtin_unset(char **opts, t_list **var_list)
 		if (opts[i][j] || !j)
 			error = error_msg(1, E_UNST, opts[i]);
 		if (!error && !opts[i][j])
-			ft_lstremove_if(var_list, opts[i], comp_var, free);
+			ft_lstremove_if(vars, opts[i], comp_var, free);
 	}
 	return (error);
 }

@@ -12,7 +12,13 @@
 
 #include "builtins.h"
 
-int	builtin_env(char **opts, t_list **var_list)
+/**
+ * 
+ * @param	opts		options -- env prints the environment list..
+ * @param	vars		Shell environment variables
+ * @return 				returns 0
+ */
+int	builtin_env(char **opts, t_list **vars)
 {
 	t_list	*node;
 
@@ -20,7 +26,7 @@ int	builtin_env(char **opts, t_list **var_list)
 		return (0);
 	if (opts[1])
 		return (error_msg(2, E_ENVA, opts[1]));
-	node = *var_list;
+	node = *vars;
 	while (node)
 	{
 		ft_dprintf(1, "%s\n", (char *)node->content);

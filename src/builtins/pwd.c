@@ -12,13 +12,19 @@
 
 #include "builtins.h"
 
-int	builtin_pwd(char **opts, t_list **var_list)
+/**
+ * 
+ * @param	opts		options -- PWD Gets current working directory..
+ * @param	vars		Shell environment variables
+ * @return 				returns 0 on success
+ */
+int	builtin_pwd(char **opts, t_list **vars)
 {
 	char	buf[BUFSIZ];
 	char	*dir;
 
 	(void) opts;
-	(void) var_list;
+	(void) vars;
 	dir = getcwd(buf, BUFSIZ);
 	if (!dir)
 		return (error_msg(errno, E_PWDV, strerror(errno)));

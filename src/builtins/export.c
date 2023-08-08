@@ -12,7 +12,14 @@
 
 #include "builtins.h"
 
-static int	export_new(t_list **var_list, char **arg, int n)
+/**
+ * 
+ * @param	arg			options -- Creates new env variable..
+ * @param	vars		Shell environment variables
+ * @param	n			index of args
+ * @return 				returns 0 on success, 1 on failure 
+ */
+static int	export_new(t_list **vars, char **arg, int n)
 {
 	char	*var;
 	t_list	*node;
@@ -36,17 +43,23 @@ static int	export_new(t_list **var_list, char **arg, int n)
 		return (1);
 	}
 	node->content = var;
-	ft_lstadd_front(var_list, node);
+	ft_lstadd_front(vars, node);
 	return (0);
 }
 
-static int	export_var(t_list **var_list, char **arg, int n)
+/**
+ * 
+ * @param	arg			options -- searches for existing env variable and replaces
+ * @param	vars		Shell environment variables
+ * @return 				returns 0 on success, 1 on failure 
+ */
+static int	export_var(t_list **vars, char **arg, int n)
 {
 	int		dif;
 	char	*var;
 	t_list	*node;
 
-	node = *var_list;
+	node = *vars;
 	while (node)
 	{
 		dif = ft_strncmp(node->content, *arg, n + 1);
@@ -64,17 +77,22 @@ static int	export_var(t_list **var_list, char **arg, int n)
 		}
 		node = node->next;
 	}
-	return (export_new(var_list, arg, n));
+	return (export_new(vars, arg, n));
 }
 
-static int	print_env(t_list **var_list)
+/**
+ * 
+ * @param	vars		vars -- prints env variable..
+ * @return 				returns 0 on success
+ */
+static int	print_env(t_list **vars)
 {
 	int		i;
 	int		flag;
 	char	*var;
 	t_list	*node;
 
-	node = *var_list;
+	node = *vars;
 	while (node)
 	{
 		i = -1;
@@ -96,12 +114,17 @@ static int	print_env(t_list **var_list)
 	return (0);
 }
 
-int	builtin_export(char **opts, t_list **var_list)
+/**
+ * 
+ * @param	opts		options -- export VARIABLE = "VALUE"..
+ * @param	vars		Shell environment variables
+ * @return 				returns 0 on success, 1 on failure 
+ */
+int	builtin_export(char **opts, t_list **vars)
 {
 	int		i;
 	int		j;
 	int		error;
-	char	*loc;
 
 	i = 0;
 	error = 0;
@@ -113,11 +136,11 @@ int	builtin_export(char **opts, t_list **var_list)
 			while (opts[i][j] && opts[i][j] != '='
 				&& (ft_isalnum(opts[i][j]) || opts[i][j] == '_'))
 				j++;
-		if (opts[i][j] != '=' && ft_strncmp(&opts[i][j], "+=", 2) && opts[i][j]
-			|| !j)
+		if ((opts[i][j] != '=' && ft_strncmp(&opts[i][j], "+=", 2)
+			&& opts[i][j]) || !j)
 			error |= error_msg(1, E_EXPO, opts[i]);
-		if (!error && export_var(var_list, &opts[i], j))
+		if (!error && export_var(vars, &opts[i], j))
 			return (error_msg(errno, E_MLOC, strerror(errno)));
 	}
-	return (error || (i == 1 && print_env(var_list)));
+	return (error || (i == 1 && print_env(vars)));
 }

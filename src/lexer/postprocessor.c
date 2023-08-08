@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   postprocessor.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rraharja <rraharja@student.42heilbronn.de> +#+  +:+       +#+        */
+/*   By: snagulap <snagulap@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/10 02:00:42 by rraharja          #+#    #+#             */
-/*   Updated: 2023/07/22 19:17:07 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/08/08 17:02:34 by snagulap         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ int	split_token(t_list **tokens, char *wrd, int n)
 	data = unquote(wrd, n, &quot, ((t_token *)(*tokens)->content)->type & WILD);
 	if (!data)
 		return (1);
-	if (ft_strlen(wrd) == n)
+	if (ft_strlen(wrd) == (size_t)n)
 	{
 		free(((t_token *)(*tokens)->content)->data);
 		((t_token *)(*tokens)->content)->data = data;

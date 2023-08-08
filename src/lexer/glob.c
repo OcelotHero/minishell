@@ -17,7 +17,7 @@ int	insert_matches(t_list *tokens, glob_t *gs, int n, int type)
 	t_list	*node;
 	t_token	*token;
 
-	if (n == gs->gl_pathc)
+	if ((size_t)n == gs->gl_pathc)
 		return (n);
 	if (!n)
 	{
@@ -65,7 +65,7 @@ int	expand_wildcard(t_list *token)
 	while (*(gs.gl_pathv + n))
 		free(*(gs.gl_pathv++ + n));
 	free(gs.gl_pathv);
-	if (n < gs.gl_pathc)
+	if ((size_t)n < gs.gl_pathc)
 		return (error_msg(errno, E_MLOC, strerror(errno)));
 	return (0);
 }
