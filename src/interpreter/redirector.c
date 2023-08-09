@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirector.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: snagulap <snagulap@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/07 13:30:06 by snagulap          #+#    #+#             */
-/*   Updated: 2023/08/07 14:10:14 by snagulap         ###   ########.fr       */
+/*   Updated: 2023/08/09 18:31:09 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ int	parse_expr(t_list *node, t_list **vars, t_cmd *cmd)
 			& (LPAREN | RPAREN | OR | SEMI | OR_IF | AND_IF | END)))
 	{
 		if (((t_token *)node->content)->type & (CMD | OPTS1 | OPTS2 | ARGS)
-				&& i < (MAXOPTS - 1))
+				&& i < (MAX_OPTS - 1))
 			cmd->opts[i++] = ((t_token *)node->content)->data;
 		if ((((t_token *)node->content)->type & (CMD | BUILTIN)) == CMD)
 			get_cmd_path(cmd->opts[0], cmd->path, *vars);
